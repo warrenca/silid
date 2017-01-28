@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "dae21f528b20ab489bc46bfb364b803e",
+    "content-hash": "9ef2a5a585c2153cf42c9d328721d339",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -72,6 +72,54 @@
                 "string"
             ],
             "time": "2015-11-06T14:35:42+00:00"
+        },
+        {
+            "name": "fzaninotto/faker",
+            "version": "v1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fzaninotto/Faker.git",
+                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/44f9a286a04b80c76a4e5fb7aad8bb539b920123",
+                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.3|^7.0"
+            },
+            "require-dev": {
+                "ext-intl": "*",
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
+            "autoload": {
+                "psr-4": {
+                    "Faker\\": "src/Faker/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Zaninotto"
+                }
+            ],
+            "description": "Faker is a PHP library that generates fake data for you.",
+            "keywords": [
+                "data",
+                "faker",
+                "fixtures"
+            ],
+            "time": "2016-04-29T12:21:54+00:00"
         },
         {
             "name": "illuminate/auth",
@@ -2112,6 +2160,117 @@
                 "environment"
             ],
             "time": "2016-09-01T10:05:43+00:00"
+        },
+        {
+            "name": "vluzrmos/collective-html",
+            "version": "v1.0.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vluzrmos/collective-html.git",
+                "reference": "1a19ce7c68722f824134bf3686af122a0aa3deb8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vluzrmos/collective-html/zipball/1a19ce7c68722f824134bf3686af122a0aa3deb8",
+                "reference": "1a19ce7c68722f824134bf3686af122a0aa3deb8",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/http": "~5.0",
+                "illuminate/session": "~5.0",
+                "illuminate/support": "~5.0",
+                "laravel/lumen-framework": "~5.0",
+                "php": ">=5.4.0"
+            },
+            "replace": {
+                "laravelcollective/html": "self.version"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9",
+                "phpunit/phpunit": "~4.0",
+                "vluzrmos/lumen-url-host": "~0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Collective\\Html\\": "src/"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylorotwell@gmail.com"
+                },
+                {
+                    "name": "Vagner do Carmo",
+                    "email": "vluzrmos@gmail.com"
+                },
+                {
+                    "name": "Adam Engebretson",
+                    "email": "adam@laravelcollective.com"
+                }
+            ],
+            "description": "LaravelCollective Html and Form builder for Lumen.",
+            "keywords": [
+                "builder",
+                "form",
+                "html",
+                "lumen"
+            ],
+            "time": "2016-10-06T15:04:29+00:00"
+        },
+        {
+            "name": "wn/lumen-generators",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webNeat/lumen-generators.git",
+                "reference": "5ad49aa58ab0e74747c8dc56e05f5cad3fcd38e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webNeat/lumen-generators/zipball/5ad49aa58ab0e74747c8dc56e05f5cad3fcd38e8",
+                "reference": "5ad49aa58ab0e74747c8dc56e05f5cad3fcd38e8",
+                "shasum": ""
+            },
+            "require": {
+                "fzaninotto/faker": "^1.5",
+                "illuminate/console": "^5.1",
+                "illuminate/filesystem": "^5.1",
+                "php": ">=5.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Wn\\Generators\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amine Ben hammou",
+                    "email": "webneat@gmail.com"
+                }
+            ],
+            "description": "A collection of generators for Lumen and Laravel 5.",
+            "keywords": [
+                "api",
+                "generators",
+                "laravel",
+                "lumen",
+                "rest"
+            ],
+            "time": "2017-01-20T19:20:55+00:00"
         }
     ],
     "packages-dev": [
@@ -2168,54 +2327,6 @@
                 "instantiate"
             ],
             "time": "2015-06-14T21:17:01+00:00"
-        },
-        {
-            "name": "fzaninotto/faker",
-            "version": "v1.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/44f9a286a04b80c76a4e5fb7aad8bb539b920123",
-                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.3.3|^7.0"
-            },
-            "require-dev": {
-                "ext-intl": "*",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~1.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": []
-            },
-            "autoload": {
-                "psr-4": {
-                    "Faker\\": "src/Faker/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "François Zaninotto"
-                }
-            ],
-            "description": "Faker is a PHP library that generates fake data for you.",
-            "keywords": [
-                "data",
-                "faker",
-                "fixtures"
-            ],
-            "time": "2016-04-29T12:21:54+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -2824,16 +2935,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.7.8",
+            "version": "5.7.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "bee7755d964f8e56d6ecb79046480fd0320b686d"
+                "reference": "69f832b87c731d5cacad7f91948778fe98335fdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/bee7755d964f8e56d6ecb79046480fd0320b686d",
-                "reference": "bee7755d964f8e56d6ecb79046480fd0320b686d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/69f832b87c731d5cacad7f91948778fe98335fdd",
+                "reference": "69f832b87c731d5cacad7f91948778fe98335fdd",
                 "shasum": ""
             },
             "require": {
@@ -2902,7 +3013,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-01-26T15:28:51+00:00"
+            "time": "2017-01-28T06:14:33+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
