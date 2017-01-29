@@ -16,5 +16,7 @@ class AppServiceProvider extends ServiceProvider
       if ($this->app->environment() == 'local') {
         $this->app->register('Wn\Generators\CommandsServiceProvider');
       }
+
+      $this->app->configure('services');
     }
 }

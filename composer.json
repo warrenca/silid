@@ -9,7 +9,9 @@
         "laravel/lumen-framework": "5.4.*",
         "vlucas/phpdotenv": "~2.2",
         "vluzrmos/collective-html": "^1.0",
-        "wn/lumen-generators": "^1.3"
+        "wn/lumen-generators": "^1.3",
+        "laravel/socialite": "^3.0",
+        "socialiteproviders/google": "^3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
