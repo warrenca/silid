@@ -86,6 +86,16 @@ $app->register('Collective\Html\InjectVarsServiceProvider');
 class_alias('Collective\Html\HtmlFacade', 'Html');
 class_alias('Collective\Html\FormFacade', 'Form');
 
+$app->register(Laravel\Socialite\SocialiteServiceProvider::class);
+class_alias(Laravel\Socialite\Facades\Socialite::class, 'Socialite');
+
+// To defy https://lumen.laravel.com/docs/5.4/validation
+// The $this->validate helper which is available in Lumen will
+// always return a JSON response with the relevant error messages.
+$app->register(Illuminate\Support\Facades\Validator::class);
+class_alias(Illuminate\Support\Facades\Validator::class, 'ValidatorX');
+
+$app->configure('services');
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
