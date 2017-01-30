@@ -23,7 +23,13 @@ $app->get('/', function() use ($app) {
 });
 
 $app->get('/login', function() use ($app) {
-  return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS')]);
+  $errors = [];
+  if (isset($_SESSION['errors'])) {
+    $errors = $_SESSION['errors'];
+    unset($_SESSION['errors']);
+  }
+
+  return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS'), 'errors' => $errors]);
 });
 
 $app->get('/booking', function () use ($app) {
@@ -128,12 +134,33 @@ $app->get('/socialite/google/login', function () use ($app) {
 });
 
 $app->get('/socialite/google/callback', function () use ($app) {
-  $user = \Socialite::driver('google')->stateless(false)->user();
-  // OAuth Two Providers
-  $token = $user->token;
-  $expiresIn = $user->expiresIn;
+  try {
+    $user = \Socialite::driver('google')->stateless(false)->user();
 
-  $_SESSION['token'] = $token;
-  $_SESSION['expiresIn'] = $expiresIn;
-  return redirect('/booking');
+    $regex = '/@((([^.]+)\.)+)([a-zA-Z]{3,}|[a-zA-Z.]{5,})/';
+    preg_match($regex, $user->email, $matches);
+    $hostname = substr($matches[0], 1);
+
+    if (! in_array($hostname, explode(",",env('SILID_ALLOWED_DOMAINS')))) {
+      $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from allowed domains.'];
+      return redirect('login');
+    }
+
+    // OAuth Two Providers
+    $token = $user->token;
+    $expiresIn = $user->expiresIn;
+
+    $_SESSION['token'] = $token;
+    $_SESSION['expiresIn'] = $expiresIn;
+    return redirect('booking');
+  } catch (\Exception $e) {
+    return redirect('login');
+  }
+});
+
+
+$app->get('/logout', function () use ($app) {
+  unset($_SESSION['token']);
+  unset($_SESSION['expiresIn']);
+  return redirect('login');
 });
