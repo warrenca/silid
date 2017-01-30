@@ -21,7 +21,7 @@
   </head>
   <body>
     <div class="container">
-      <h1><img src="/images/silid-60px.jpg"/>ilid Booking</h1>
+      <h1 style="color: #13c16c"><img src="/images/silid-60px.jpg" height="60"/>ilid Booking</h1>
 
       @yield('content')
     </div>

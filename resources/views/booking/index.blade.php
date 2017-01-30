@@ -21,14 +21,25 @@
   </blockquote>
   @endif
 
+  @if ($success_message != "")
+  <blockquote class="green lighten-2 success">
+    <i class="material-icons">info_outline</i> {{$success_message}}
+  </blockquote>
+  @endif
+
   <form class="col s12" name="booking" method="POST">
     <div class="row">
       <div class="input-field col s5">
         <select name="room_id">
           <option value="" disabled selected>Select Room</option>
-          <option value="1">Conference Room</option>
-          <option value="2">Room A</option>
-          <option value="3">Room B</option>
+          @foreach ($rooms as $room)
+            <option value="{{$room->id}}"
+              @if (isset($booking_parameters['room_id']) &&
+                   $room->id == $booking_parameters['room_id'])
+              selected
+              @endif
+              >{{$room->name}}</option>
+          @endforeach
         </select>
         <label>Select Room</label>
       </div>
@@ -43,36 +54,36 @@
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input placeholder="Date" id="booking_date" type="text" class="datepicker" name="booking_date">
+        <input placeholder="Date" id="booking_date" type="text" class="datepicker" name="booking_date" value="{{@$booking_parameters['booking_date']}}">
         <label for="booking_date">Select booking date</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s6">
-        <input placeholder="Time" id="booking_time" type="text" class="timepicker" name="booking_time">
+        <input placeholder="Time" id="booking_time" type="text" class="timepicker" name="booking_time" value="{{@$booking_parameters['booking_time']}}">
         <label for="booking_time">Select booking time</label>
       </div>
       <div class="input-field col s6">
         <select name="booking_duration">
           <option value="" disabled selected>Booking duration</option>
-          <option value="1800">30 mins</option>
-          <option value="3600">1 hr</option>
-          <option value="5400">1.5 hr</option>
-          <option value="7200">2 hr</option>
-          <option value="9000">2.5 hr</option>
-          <option value="10800">3 hr</option>
-          <option value="12600">3.5 hr</option>
-          <option value="14400">Half day (4hrs)</option>
-          <option value="86400">Full day</option>
+          @foreach ($booking_durations as $duration => $label)
+            <option value="{{$duration}}"
+            @if (isset($booking_parameters['booking_duration']) &&
+                 $duration == $booking_parameters['booking_duration'])
+            selected
+            @endif
+            >{{$label}}</option>
+          @endforeach
         </select>
         <label>Duration</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+        <button class="btn waves-effect waves-light light-blue accent-3" type="submit" name="action">Submit
           <i class="material-icons right">send</i>
         </button>
+        <a href="/booking/reset" onclick="return confirm('Are you sure you want to clear the form?')" class="waves-effect waves-teal btn-flat">Reset</a>
       </div>
     </div>
   </form>

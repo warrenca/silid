@@ -95,7 +95,11 @@ class_alias(Laravel\Socialite\Facades\Socialite::class, 'Socialite');
 $app->register(Illuminate\Support\Facades\Validator::class);
 class_alias(Illuminate\Support\Facades\Validator::class, 'ValidatorX');
 
+$app->register(Illuminate\Mail\MailServiceProvider::class);
+
 $app->configure('services');
+$app->configure('booking');
+$app->configure('mail');
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

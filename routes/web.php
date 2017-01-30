@@ -11,7 +11,11 @@
 |
 */
 
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\Confirmation as Confirmation;
 use App\Booking as Booking;
+use App\Room as Room;
 
 $app->get('/', function() use ($app) {
   try {
@@ -40,11 +44,22 @@ $app->get('/booking', function () use ($app) {
   }
 
   $booking_errors = [];
+  $booking_parameters = [];
+  $success_message = "";
   $email = "";
 
   if (isset($_SESSION['booking_errors'])) {
       $booking_errors = $_SESSION['booking_errors'];
       unset($_SESSION['booking_errors']);
+  }
+
+  if (isset($_SESSION['booking_parameters'])) {
+    $booking_parameters = $_SESSION['booking_parameters'];
+  }
+
+  if (isset($_SESSION['success'])) {
+      $success_message = $_SESSION['success'];
+      unset($_SESSION['success']);
   }
 
   try {
@@ -53,10 +68,31 @@ $app->get('/booking', function () use ($app) {
   } catch (\Exception $e) {
 
   }
-  return $app->make('view')->make('booking/index', ['email' => $email, 'booking_errors' => $booking_errors]);
+
+  return $app->make('view')->make('booking/index',
+                                  [
+                                    'email' => $email,
+                                    'booking_errors' => $booking_errors,
+                                    'rooms' => Room::all(),
+                                    'booking_durations' => $app['config']['booking.duration'],
+                                    'booking_parameters' => $booking_parameters,
+                                    'success_message' => $success_message
+                                  ]
+                                );
+});
+
+$app->get('/booking/reset', function () use ($app) {
+  unset($_SESSION['booking_parameters']);
+  return redirect('booking');
 });
 
 $app->post('/booking', function () use ($app) {
+  try {
+    \Socialite::driver('google')->userFromToken($_SESSION['token']);
+  } catch (\Exception $e) {
+    return redirect('login');
+  }
+
   $validator = ValidatorX::make($app->request->all(), [
     'room_id' => 'required|numeric',
     'reserved_by' => 'required|email',
@@ -71,6 +107,7 @@ $app->post('/booking', function () use ($app) {
   if ($validator->fails()) {
     try {
       $_SESSION['booking_errors'] = $validator->errors()->all();
+      $_SESSION['booking_parameters'] = $app->request->all();
     } catch (\Exception $e) {
       dd($e->getMessage());
     }
@@ -117,8 +154,12 @@ $app->post('/booking', function () use ($app) {
   $booking->start = $start;
   $booking->end = $end;
   $booking->save();
-  echo "Your booking has been saved but you must confirm it on your email to lock the room and timing. To cancel, click this link.";
-  die();
+
+  $_SESSION['success'] = "An email has been sent to you for instruction to confirm and lock-in your booking. Please check it out right away.";
+  Mail::to($reserved_by)
+        ->send(new Confirmation($booking));
+  unset($_SESSION['booking_parameters']);
+  return redirect('booking');
 });
 
 /*
