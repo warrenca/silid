@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Crypt;
 
 use App\Booking;
 use Hashids\Hashids;
+use Carbon\Carbon;
 
 class Confirmation extends Mailable
 {
@@ -39,7 +40,10 @@ class Confirmation extends Mailable
                     ->subject('Silid Room Booking Confirmation')
                     ->with([
                         'confirmation_link' => $confirmation_link,
-                        'booking' => $this->booking
+                        'booking_room_name' => $this->booking->room->name,
+                        'booking_room_description' => $this->booking->room->description,
+                        'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),
+                        'booking_end' => date('F d, Y @H:i A', strtotime($this->booking->end)),
                     ]);
     }
 }
