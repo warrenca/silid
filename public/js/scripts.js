@@ -4,7 +4,8 @@ $(document).ready(function(){
        if(ele.select){
               this.close();
        }
-    }
+    },
+    min: true
   });
   $('.timepicker').pickatime({
     min: [7,30],
