@@ -1,6 +1,12 @@
 @extends('layouts.master')
 @section('content')
 <div class="col s12 m7">
+  @if ($success_message != "")
+  <blockquote class="green lighten-2 success">
+    <i class="material-icons">info_outline</i> {{$success_message}}
+  </blockquote>
+  @endif
+
   <h4 class="header">Hi {{$booking->reserved_by}}!</h4>
   <div class="card horizontal">
     <div class="card-image">

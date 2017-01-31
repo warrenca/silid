@@ -29,7 +29,7 @@ class Locked extends Mailable
         // https://github.com/laravel/lumen/blob/60776a0d763ac8a255ac14008e4edda25d2224b1/.env.example
         // https://laracasts.com/discuss/channels/lumen/lumen-52-mail-not-working
         $hostname = env('SILID_HOSTNAME');
-        $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.CONFIRMATION_HASH_LENGTH']);
+        $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
 
         $confirmation_id = $hashids->encode($this->booking->id);
 

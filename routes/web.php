@@ -170,7 +170,7 @@ $app->post('/booking', function () use ($app) {
 
 /* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
-  $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.CONFIRMATION_HASH_LENGTH']);
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
   $booking_id = $hashids->decode($confirmation_id);
 
   try {
@@ -182,7 +182,7 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
     if ($booking->count() > 0) {
       unset($_SESSION['booking_errors']);
       $_SESSION['success'] = "Your booking is confirmed!";
-      $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
+      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
       //
       // Mail::to($booking->reserved_by)
       //       ->send(new Locked($booking));
@@ -199,19 +199,32 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
 /* Booking Confirmation */
 $app->get('/booking/view/{booking_id_param}', function ($booking_id_param) use ($app) {
   try {
-    $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
+    $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
     $booking = Booking::find($hashids->decode($booking_id_param))->first();
 
-    $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.CONFIRMATION_HASH_LENGTH']);
-    $confirmation_id = $hashids->encode($booking->id);
+    if ($booking->count() > 0)
+    {
+      $success_message = '';
+      if (isset($_SESSION['success'])) {
+          $success_message = $_SESSION['success'];
+          unset($_SESSION['success']);
+      }
 
-    return $app->make('view')->make('booking/view',
-                                    [
-                                      'booking' => $booking,
-                                      'confirmation_id' => $confirmation_id
-                                    ]
-                                  );
+      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
+      $confirmation_id = $hashids->encode($booking->id);
+
+      return $app->make('view')->make('booking/view',
+                                      [
+                                        'booking' => $booking,
+                                        'confirmation_id' => $confirmation_id,
+                                        'success_message' => $success_message
+                                      ]
+                                    );
+    }
+
+    return redirect('booking?try-booking-view');
   } catch(\Exception $e) {
+    return redirect('booking?catch-booking-view');
     dd($e->getMessage());
   }
 
@@ -265,7 +278,7 @@ $app->get('/logout', function () use ($app) {
 /* generateBookingLink */
 function generateBookingLink($booking_id) {
   $hostname = env('SILID_HOSTNAME');
-  $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
   $booking_id_hashed = $hashids->encode($booking_id);
 
   return "<a href=\"$hostname/booking/view/$booking_id_hashed\">here</a>";
