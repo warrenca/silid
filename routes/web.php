@@ -105,17 +105,16 @@ $app->post('/booking', function () use ($app) {
     'room_id.required' => 'The room is required'
   ]);
 
+  $_SESSION['booking_parameters'] = $app->request->all();
   if ($validator->fails()) {
     try {
       $_SESSION['booking_errors'] = $validator->errors()->all();
-      $_SESSION['booking_parameters'] = $app->request->all();
     } catch (\Exception $e) {
       dd($e->getMessage());
     }
 
     return redirect('booking');
   }
-
 
   $room_id = $app->request->room_id;
   $reserved_by = $app->request->reserved_by;
@@ -143,9 +142,9 @@ $app->post('/booking', function () use ($app) {
 
     // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
     if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
-      echo "confict";
-      echo "redirect...";
-      die();
+      $booking_link = generateBookingLink($currentBooking->id);
+      $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it $booking_link"];
+      return redirect('booking');
     }
   }
 
@@ -230,3 +229,12 @@ $app->get('/logout', function () use ($app) {
   unset($_SESSION['expiresIn']);
   return redirect('login');
 });
+
+/* generateBookingLink */
+function generateBookingLink($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
+  $hashids = new Hashids(env('APP_KEY'), env('SILID_BOOKING_VIEW_HASH_LENGTH'));
+  $booking_id_hashed = $hashids->encode($booking_id);
+
+  return "<a href=\"$hostname/booking/view/$booking_id_hashed\">here</a>";
+}
