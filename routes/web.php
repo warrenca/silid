@@ -163,15 +163,28 @@ $app->post('/booking', function () use ($app) {
   return redirect('booking');
 });
 
+/* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
-  $hashids = new Hashids(env('APP_KEY'), 10);
+  $hashids = new Hashids(env('APP_KEY'), env('SILID_CONFIRMATION_HASH_LENGTH'));
   $booking_id = $hashids->decode($confirmation_id);
 
-  $booking = Booking::find($booking_id);
-  $booking->confirmed = 1;
-  $booking->status = 'confirmed';
-  $booking->save();
+  try {
+    $booking = Booking::find($booking_id)->first();
+    $booking->confirmed = 1;
+    $booking->status = 'confirmed';
+    $booking->save();
 
+    if ($booking->count() > 0) {
+      unset($_SESSION['booking_errors']);
+      $_SESSION['success'] = "Your booking is confirmed!";
+      $hashids = new Hashids(env('APP_KEY'), env('SILID_BOOKING_VIEW_HASH_LENGTH'));
+      return redirect('booking/view/' . $hashids->encode($booking->id));
+    }
+  } catch(\Exception $e) {
+    unset($_SESSION['success']);
+    $_SESSION['booking_errors'] = ['That room booking do not exist.'];
+    return redirect('booking');
+  }
 });
 
 /*
