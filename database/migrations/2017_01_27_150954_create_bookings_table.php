@@ -15,7 +15,10 @@ class CreateBookingsTable extends Migration
     {
       Schema::create('bookings', function (Blueprint $table) {
         $table->bigIncrements('id');
-        $table->bigInteger('room_id');
+
+        // http://stackoverflow.com/questions/22615926/migration-cannot-add-foreign-key-constraint-in-laravel#answer-22616100
+        $table->bigInteger('room_id')->unsigned();
+        $table->foreign('room_id')->references('id')->on('rooms');
         $table->string('reserved_by');
         $table->string('on_behalf_of')->nullable();
         $table->boolean('confirmed')->default(false);
@@ -24,6 +27,7 @@ class CreateBookingsTable extends Migration
         $table->enum('status', ['unconfirmed', 'confirmed', 'cancelled'])
               ->default('unconfirmed');
         $table->timestamps();
+
       });
     }
 
