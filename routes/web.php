@@ -169,7 +169,7 @@ $app->post('/booking', function () use ($app) {
 
 /* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
-  $hashids = new Hashids(env('APP_KEY'), env('SILID_CONFIRMATION_HASH_LENGTH'));
+  $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.CONFIRMATION_HASH_LENGTH']);
   $booking_id = $hashids->decode($confirmation_id);
 
   try {
@@ -181,7 +181,7 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
     if ($booking->count() > 0) {
       unset($_SESSION['booking_errors']);
       $_SESSION['success'] = "Your booking is confirmed!";
-      $hashids = new Hashids(env('APP_KEY'), env('SILID_BOOKING_VIEW_HASH_LENGTH'));
+      $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
       return redirect('booking/view/' . $hashids->encode($booking->id));
     }
   } catch(\Exception $e) {
@@ -239,7 +239,7 @@ $app->get('/logout', function () use ($app) {
 /* generateBookingLink */
 function generateBookingLink($booking_id) {
   $hostname = env('SILID_HOSTNAME');
-  $hashids = new Hashids(env('APP_KEY'), env('SILID_BOOKING_VIEW_HASH_LENGTH'));
+  $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
   $booking_id_hashed = $hashids->encode($booking_id);
 
   return "<a href=\"$hostname/booking/view/$booking_id_hashed\">here</a>";
