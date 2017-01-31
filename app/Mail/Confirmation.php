@@ -35,7 +35,7 @@ class Confirmation extends Mailable
 
         $confirmation_link = "$hostname/booking/confirmation/$confirmation_id";
         return $this->view('emails.confirmation')
-                    ->subject('Silid Room Booking Confirmation')
+                    ->subject('Silid Room Booking Confirmation - Reference Code: ' . $confirmation_id)
                     ->with([
                         'confirmation_link' => $confirmation_link,
                         'booking_room_name' => $this->booking->room->name,
