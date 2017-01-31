@@ -234,7 +234,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $hostname = substr($matches[0], 1);
 
     if (! in_array($hostname, explode(",",env('SILID_ALLOWED_DOMAINS')))) {
-      $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from allowed domains.'];
+      $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from the allowed domains.'];
       return redirect('login');
     }
 
