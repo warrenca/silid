@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Mail;
+use Hashids\Hashids;
 
 use App\Mail\Confirmation as Confirmation;
 use App\Booking as Booking;
@@ -160,6 +161,17 @@ $app->post('/booking', function () use ($app) {
         ->send(new Confirmation($booking));
   unset($_SESSION['booking_parameters']);
   return redirect('booking');
+});
+
+$app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
+  $hashids = new Hashids(env('APP_KEY'), 10);
+  $booking_id = $hashids->decode($confirmation_id);
+
+  $booking = Booking::find($booking_id);
+  $booking->confirmed = 1;
+  $booking->status = 'confirmed';
+  $booking->save();
+
 });
 
 /*
