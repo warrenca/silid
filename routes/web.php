@@ -191,6 +191,27 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
   }
 });
 
+/* Booking Confirmation */
+$app->get('/booking/view/{booking_id_param}', function ($booking_id_param) use ($app) {
+  try {
+    $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
+    $booking = Booking::find($hashids->decode($booking_id_param))->first();
+
+    $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.CONFIRMATION_HASH_LENGTH']);
+    $confirmation_id = $hashids->encode($booking->id);
+
+    return $app->make('view')->make('booking/view',
+                                    [
+                                      'booking' => $booking,
+                                      'confirmation_id' => $confirmation_id
+                                    ]
+                                  );
+  } catch(\Exception $e) {
+    dd($e->getMessage());
+  }
+
+});
+
 /*
  * https://github.com/laravel/socialite
  * http://socialiteproviders.github.io/providers/google+/
