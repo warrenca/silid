@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Hashids\Hashids;
 
 use App\Mail\Confirmation as Confirmation;
+use App\Mail\Locked as Locked;
 use App\Booking as Booking;
 use App\Room as Room;
 
@@ -182,6 +183,10 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
       unset($_SESSION['booking_errors']);
       $_SESSION['success'] = "Your booking is confirmed!";
       $hashids = new Hashids(env('APP_KEY'), $app['config']['booking.hashes.VIEW_HASH_LENGTH']);
+      //
+      // Mail::to($booking->reserved_by)
+      //       ->send(new Locked($booking));
+
       return redirect('booking/view/' . $hashids->encode($booking->id));
     }
   } catch(\Exception $e) {
