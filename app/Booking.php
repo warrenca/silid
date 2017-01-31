@@ -12,4 +12,9 @@ class Booking extends Model
      * @var string
      */
     protected $table = 'bookings';
+
+    public function room()
+    {
+        return $this->belongsTo('App\Room');
+    }
 }

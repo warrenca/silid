@@ -12,4 +12,12 @@ class Room extends Model
      * @var string
      */
     protected $table = 'rooms';
+
+    /**
+     * Get the comments for the blog post.
+     */
+    public function bookings()
+    {
+        return $this->hasMany('App\Booking');
+    }
 }
