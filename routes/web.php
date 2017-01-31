@@ -18,6 +18,7 @@ use App\Mail\Confirmation as Confirmation;
 use App\Booking as Booking;
 use App\Room as Room;
 
+/* Root URL */
 $app->get('/', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -27,6 +28,7 @@ $app->get('/', function() use ($app) {
   }
 });
 
+/* Login page */
 $app->get('/login', function() use ($app) {
   $errors = [];
   if (isset($_SESSION['errors'])) {
@@ -37,6 +39,7 @@ $app->get('/login', function() use ($app) {
   return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS'), 'errors' => $errors]);
 });
 
+/* Booking form */
 $app->get('/booking', function () use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -82,11 +85,13 @@ $app->get('/booking', function () use ($app) {
                                 );
 });
 
+/* Booking reset form */
 $app->get('/booking/reset', function () use ($app) {
   unset($_SESSION['booking_parameters']);
   return redirect('booking');
 });
 
+/* Booking saving */
 $app->post('/booking', function () use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -198,6 +203,7 @@ $app->get('/socialite/google/login', function () use ($app) {
   return \Socialite::driver('google')->stateless(false)->redirect();
 });
 
+/* Socialite Google callback - after google login */
 $app->get('/socialite/google/callback', function () use ($app) {
   try {
     $user = \Socialite::driver('google')->stateless(false)->user();
@@ -223,7 +229,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
   }
 });
 
-
+/* Logout */
 $app->get('/logout', function () use ($app) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);

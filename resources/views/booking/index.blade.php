@@ -7,14 +7,14 @@
   </div>
 
   @if (count($booking_errors) > 0)
-  <blockquote>
+  <blockquote class="red lighten-3 errors">
       <ul>
           @foreach ($booking_errors as $k=>$error)
               <li>
                 @if ($k==0)
                   <i class="material-icons">warning</i>
                 @endif
-                {{ $error }}
+                {!! $error !!}
               </li>
           @endforeach
       </ul>

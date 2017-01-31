@@ -6,7 +6,7 @@
   </head>
   <body>
     <p>Hi there!</p>
-    <p>You must confirm the booking you just made to lock in the room and timings.</p>
+    <p>You must confirm the booking you just made to lock in the room and the timings.</p>
     <p>
       <a href="{{$confirmation_link}}">Click this link now to confirm.</a> or open the link below<br/>
       <a href="{{$confirmation_link}}">{{$confirmation_link}}</a><br/>
