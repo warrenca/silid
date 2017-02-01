@@ -3,11 +3,9 @@
 namespace App\Mail;
 
 use Illuminate\Mail\Mailable;
-use Illuminate\Support\Facades\Crypt;
 
 use App\Booking;
 use Hashids\Hashids;
-use Carbon\Carbon;
 
 class Confirmation extends Mailable
 {
@@ -31,13 +29,13 @@ class Confirmation extends Mailable
         // https://github.com/laravel/lumen/blob/60776a0d763ac8a255ac14008e4edda25d2224b1/.env.example
         // https://laracasts.com/discuss/channels/lumen/lumen-52-mail-not-working
         $hostname = env('SILID_HOSTNAME');
-        $hashids = new Hashids(env('APP_KEY'), 10);
+        $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
 
         $confirmation_id = $hashids->encode($this->booking->id);
 
-        $confirmation_link = "http://$hostname/booking/confirmation/$confirmation_id";
+        $confirmation_link = "$hostname/booking/confirmation/$confirmation_id";
         return $this->view('emails.confirmation')
-                    ->subject('Silid Room Booking Confirmation')
+                    ->subject('Silid Room Booking Confirmation - Reference Code: ' . $confirmation_id)
                     ->with([
                         'confirmation_link' => $confirmation_link,
                         'booking_room_name' => $this->booking->room->name,

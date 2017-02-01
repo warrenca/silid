@@ -1,13 +1,5 @@
 @extends('layouts.master')
 @section('content')
-  <div class="col s12 m2 center-align">
-    <p class="z-depth-3" style="padding: 15px 0"># Sign-in with Google! using an email from the following allowed domains: {{$allowed_domains}}<br/>
-      <a href="/socialite/google/login">
-        <img src="/images/btn_google_signin_dark_normal_web.png">
-      </a>
-    </p>
-  </div>
-
   @if (count($errors) > 0)
   <blockquote>
       <ul>
@@ -22,4 +14,11 @@
       </ul>
   </blockquote>
   @endif
+  <div class="col s12 m2 center-align">
+    <p class="z-depth-3" style="padding: 15px 0"># Sign-in with Google! using an email from the following allowed domains: {{$allowed_domains}}<br/>
+      <a href="/socialite/google/login">
+        <img src="/images/btn_google_signin_dark_normal_web.png">
+      </a>
+    </p>
+  </div>
 @stop

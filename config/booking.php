@@ -12,4 +12,13 @@ return [
     '14400' => 'Half day (4hrs)',
     '86400' => 'Full day'
   ],
+
+  /* These hash length values are constant. You should not change
+   * this if you already have users who made bookings. The link on
+   * the email will not work if the value gets changed.
+   */
+  'hashes' => [
+    'VIEW_HASH_LENGTH' => 9,
+    'CONFIRMATION_HASH_LENGTH' => 5
+  ]
 ];

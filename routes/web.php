@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Mail;
 use Hashids\Hashids;
 
 use App\Mail\Confirmation as Confirmation;
+use App\Mail\Locked as Locked;
 use App\Booking as Booking;
 use App\Room as Room;
 
+/* Root URL */
 $app->get('/', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -27,6 +29,7 @@ $app->get('/', function() use ($app) {
   }
 });
 
+/* Login page */
 $app->get('/login', function() use ($app) {
   $errors = [];
   if (isset($_SESSION['errors'])) {
@@ -37,6 +40,7 @@ $app->get('/login', function() use ($app) {
   return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS'), 'errors' => $errors]);
 });
 
+/* Booking form */
 $app->get('/booking', function () use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -82,11 +86,13 @@ $app->get('/booking', function () use ($app) {
                                 );
 });
 
+/* Booking reset form */
 $app->get('/booking/reset', function () use ($app) {
   unset($_SESSION['booking_parameters']);
   return redirect('booking');
 });
 
+/* Booking saving */
 $app->post('/booking', function () use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
@@ -105,17 +111,16 @@ $app->post('/booking', function () use ($app) {
     'room_id.required' => 'The room is required'
   ]);
 
+  $_SESSION['booking_parameters'] = $app->request->all();
   if ($validator->fails()) {
     try {
       $_SESSION['booking_errors'] = $validator->errors()->all();
-      $_SESSION['booking_parameters'] = $app->request->all();
     } catch (\Exception $e) {
       dd($e->getMessage());
     }
 
     return redirect('booking');
   }
-
 
   $room_id = $app->request->room_id;
   $reserved_by = $app->request->reserved_by;
@@ -143,9 +148,9 @@ $app->post('/booking', function () use ($app) {
 
     // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
     if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
-      echo "confict";
-      echo "redirect...";
-      die();
+      $booking_link = generateBookingLink($currentBooking->id);
+      $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it $booking_link"];
+      return redirect('booking');
     }
   }
 
@@ -163,14 +168,65 @@ $app->post('/booking', function () use ($app) {
   return redirect('booking');
 });
 
+/* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
-  $hashids = new Hashids(env('APP_KEY'), 10);
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
   $booking_id = $hashids->decode($confirmation_id);
 
-  $booking = Booking::find($booking_id);
-  $booking->confirmed = 1;
-  $booking->status = 'confirmed';
-  $booking->save();
+  try {
+    $booking = Booking::find($booking_id)->first();
+    $booking->confirmed = 1;
+    $booking->status = 'confirmed';
+    $booking->save();
+
+    if ($booking->count() > 0) {
+      unset($_SESSION['booking_errors']);
+      $_SESSION['success'] = "Your booking is confirmed!";
+      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
+      //
+      // Mail::to($booking->reserved_by)
+      //       ->send(new Locked($booking));
+
+      return redirect('booking/view/' . $hashids->encode($booking->id));
+    }
+  } catch(\Exception $e) {
+    unset($_SESSION['success']);
+    $_SESSION['booking_errors'] = ['That room booking do not exist.'];
+    return redirect('booking');
+  }
+});
+
+/* Booking Confirmation */
+$app->get('/booking/view/{booking_id_param}', function ($booking_id_param) use ($app) {
+  try {
+    $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
+    $booking = Booking::find($hashids->decode($booking_id_param))->first();
+
+    if ($booking->count() > 0)
+    {
+      $success_message = '';
+      if (isset($_SESSION['success'])) {
+          $success_message = $_SESSION['success'];
+          unset($_SESSION['success']);
+      }
+
+      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
+      $confirmation_id = $hashids->encode($booking->id);
+
+      return $app->make('view')->make('booking/view',
+                                      [
+                                        'booking' => $booking,
+                                        'confirmation_id' => $confirmation_id,
+                                        'success_message' => $success_message
+                                      ]
+                                    );
+    }
+
+    return redirect('booking?try-booking-view');
+  } catch(\Exception $e) {
+    return redirect('booking?catch-booking-view');
+    dd($e->getMessage());
+  }
 
 });
 
@@ -186,6 +242,7 @@ $app->get('/socialite/google/login', function () use ($app) {
   return \Socialite::driver('google')->stateless(false)->redirect();
 });
 
+/* Socialite Google callback - after google login */
 $app->get('/socialite/google/callback', function () use ($app) {
   try {
     $user = \Socialite::driver('google')->stateless(false)->user();
@@ -195,7 +252,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $hostname = substr($matches[0], 1);
 
     if (! in_array($hostname, explode(",",env('SILID_ALLOWED_DOMAINS')))) {
-      $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from allowed domains.'];
+      $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from the allowed domains.'];
       return redirect('login');
     }
 
@@ -211,9 +268,18 @@ $app->get('/socialite/google/callback', function () use ($app) {
   }
 });
 
-
+/* Logout */
 $app->get('/logout', function () use ($app) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);
   return redirect('login');
 });
+
+/* generateBookingLink */
+function generateBookingLink($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
+  $booking_id_hashed = $hashids->encode($booking_id);
+
+  return "<a href=\"$hostname/booking/view/$booking_id_hashed\">here</a>";
+}

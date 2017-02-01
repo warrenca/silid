@@ -21,6 +21,26 @@
   </head>
   <body>
     <div class="container">
+      <nav>
+        <div class="nav-wrapper green accent-4">
+          <a href="javascript:void(0)" class="brand-logo center"><img src="/images/silid-60px.jpg" height="60"/></a>
+          @if (isset($_SESSION['token']))
+          <ul id="dropdown1" class="dropdown-content">
+            <li><a href="/booking/list">List all</a></li>
+            <li><a href="/booking/own">View own</a></li>
+          </ul>
+          <ul id="nav-mobile" class="hide-on-med-and-down">
+            <li><a href="/booking">Book Now</a></li>
+            <!-- Dropdown Trigger -->
+            <li><a class="dropdown-button" href="#!" data-activates="dropdown1">Bookings<i class="material-icons right">arrow_drop_down</i></a></li>
+            <li class="right">
+              <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
+            </li>
+          </ul>
+          @endif
+        </div>
+      </nav>
+
       <h1 style="color: #13c16c"><img src="/images/silid-60px.jpg" height="60"/>ilid Booking</h1>
 
       @yield('content')
