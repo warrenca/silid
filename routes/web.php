@@ -155,8 +155,8 @@ $app->post('/booking', function () use ($app) {
 
     // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
     if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
-      $booking_link = generateBookingLink($currentBooking->id);
-      $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it $booking_link"];
+      $booking_link = generateBookingViewLink($currentBooking->id);
+      $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
       return redirect('booking');
     }
   }
@@ -172,7 +172,8 @@ $app->post('/booking', function () use ($app) {
   Mail::to($reserved_by)
         ->send(new Confirmation($booking));
   unset($_SESSION['booking_parameters']);
-  return redirect('booking');
+
+  return redirect(generateBookingViewRoute($booking->id));
 });
 
 /* Booking Confirmation */
@@ -189,14 +190,14 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
     if ($booking->count() > 0) {
       unset($_SESSION['booking_errors']);
       $_SESSION['success'] = "Your booking is confirmed!";
-      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
       //
       // Mail::to($booking->reserved_by)
       //       ->send(new Locked($booking));
 
-      return redirect('booking/view/' . $hashids->encode($booking->id));
+      return redirect('booking/view/' . encodeBookingIdForView($booking->id));
     }
   } catch(\Exception $e) {
+    dd($e->getMessage());
     unset($_SESSION['success']);
     $_SESSION['booking_errors'] = ['That room booking do not exist.'];
     return redirect('booking');
@@ -206,8 +207,7 @@ $app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id)
 /* Booking Confirmation */
 $app->get('/booking/view/{booking_id_param}', function ($booking_id_param) use ($app) {
   try {
-    $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
-    $booking = Booking::find($hashids->decode($booking_id_param))->first();
+    $booking = Booking::find(decodeBookingIdForView($booking_id_param))->first();
 
     if ($booking->count() > 0)
     {
@@ -268,7 +268,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $expiresIn = $user->expiresIn;
 
     $_SESSION['token'] = $token;
-    $_SESSION['expiresIn'] = $expiresIn;
+    $_SESSION['expiresIn'] = time() + $expiresIn;
     return redirect('booking');
   } catch (\Exception $e) {
     return redirect('login');
@@ -282,11 +282,27 @@ $app->get('/logout', function () use ($app) {
   return redirect('login');
 });
 
-/* generateBookingLink */
-function generateBookingLink($booking_id) {
-  $hostname = env('SILID_HOSTNAME');
+/* decode booking id for view */
+function decodeBookingIdForView($booking_id) {
   $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
-  $booking_id_hashed = $hashids->encode($booking_id);
+  return $hashids->decode($booking_id);
+}
 
-  return "<a href=\"$hostname/booking/view/$booking_id_hashed\">here</a>";
+/* encode booking id for view */
+function encodeBookingIdForView($booking_id) {
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
+  return $hashids->encode($booking_id);
+}
+
+/* generateBookingViewRoute */
+function generateBookingViewRoute($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
+  $booking_id_hashed = encodeBookingIdForView($booking_id);
+
+  return "booking/view/$booking_id_hashed";
+}
+
+/* generateBookingViewLink */
+function generateBookingViewLink($booking_id) {
+  return "$hostname/" . generateBookingViewRoute($booking_id);
 }
