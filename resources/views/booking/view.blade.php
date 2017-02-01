@@ -22,7 +22,7 @@
             @if ($booking->confirmed)
             <li><br/>If you want to cancel this booking, click < here >.</li>
             @else
-            <li><br/><i>This booking is not yet confirmed. To lock the room, immediately look for the following subject on your email:<br/>"Reference Code: {{$confirmation_id}}"</i></li>
+            <li><br/><small><i>This booking is not yet confirmed. To lock the room, immediately look for the following subject on your email:<br/>"Reference Code: {{$confirmation_id}}"</i></small></li>
             @endif
         </ul>
       </div>
