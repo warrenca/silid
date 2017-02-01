@@ -25,12 +25,19 @@ $app->get('/', function() use ($app) {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
     return redirect('booking');
   } catch (\Exception $e) {
+    unset($_SESSION['token']);
     return redirect('login');
   }
 });
 
 /* Login page */
 $app->get('/login', function() use ($app) {
+  try {
+    \Socialite::driver('google')->userFromToken($_SESSION['token']);
+  } catch (\Exception $e) {
+    unset($_SESSION['token']);
+  }
+
   $errors = [];
   if (isset($_SESSION['errors'])) {
     $errors = $_SESSION['errors'];
