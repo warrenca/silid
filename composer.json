@@ -13,7 +13,8 @@
         "laravel/socialite": "^3.0",
         "socialiteproviders/google": "^3.0",
         "illuminate/mail": "^5.4",
-        "hashids/hashids": "^2.0"
+        "hashids/hashids": "^2.0",
+        "crewlabs/unsplash": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
