@@ -38,6 +38,7 @@ class Confirmation extends Mailable
                     ->subject('Silid Room Booking Confirmation - Reference Code: ' . $confirmation_id)
                     ->with([
                         'confirmation_link' => $confirmation_link,
+                        'purpose' => $this->booking->purpose,
                         'booking_room_name' => $this->booking->room->name,
                         'booking_room_description' => $this->booking->room->description,
                         'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),

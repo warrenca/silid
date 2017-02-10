@@ -15,6 +15,7 @@
     <p>
       <b>Room Booking Details</b>
       <ul>
+        <li>Purpose: <b>{{$purpose}}</b></li>
         <li>Room Name: <b>{{$booking_room_name}}</b></li>
         <li>Room Description: <b>{{$booking_room_description}}</b></li>
         <li>Start Date and Time: <b>{{$booking_start}}</b></li>

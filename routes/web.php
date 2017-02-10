@@ -30,6 +30,7 @@ $app->get('/', function() use ($app) {
 $app->get('/login', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    return redirect('booking');
   } catch (\Exception $e) {
     unset($_SESSION['token']);
   }

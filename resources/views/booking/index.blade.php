@@ -30,8 +30,8 @@
   <form class="col s12" name="booking" method="POST">
     <div class="row">
       <div class="input-field col s12">
-        <input placeholder="{{$booking_purpose_label}}" id="booking_purpose" type="text" maxlength="10">
-        <label for="booking_purpose">Purpose</label>
+        <input placeholder="{{$purpose_label}}" type="text" id="purpose" name="purpose" value="{{@$booking_parameters['purpose']}}" maxlength="255">
+        <label for="purpose">Purpose</label>
       </div>
     </div>
     <div class="row">

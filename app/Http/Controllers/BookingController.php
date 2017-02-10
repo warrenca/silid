@@ -55,7 +55,7 @@ class BookingController extends Controller
                                       'booking_durations' => app()['config']['booking.duration'],
                                       'booking_parameters' => $booking_parameters,
                                       'success_message' => $success_message,
-                                      'booking_purpose_label' => $purpose_labels[$random_purpose]
+                                      'purpose_label' => $purpose_labels[$random_purpose]
                                     ]
                                   );
   }
@@ -74,11 +74,11 @@ class BookingController extends Controller
 
     $validator = \ValidatorX::make(app()->request->all(), [
       'room_id' => 'required|numeric',
+      'purpose' => 'required|max:255',
       'reserved_by' => 'required|email',
       'booking_date' => 'required',
       'booking_time' => 'required',
       'booking_duration' => 'required|numeric',
-      'booking_purpose' => 'required|max:255',
     ],
     [
       'room_id.required' => 'The room is required'
@@ -96,6 +96,7 @@ class BookingController extends Controller
     }
 
     $room_id = app()->request->room_id;
+    $purpose = app()->request->purpose;
     $reserved_by = app()->request->reserved_by;
     $booking_date = app()->request->booking_date;
     $booking_time = app()->request->booking_time;
@@ -128,6 +129,7 @@ class BookingController extends Controller
     }
 
     $booking = new Booking;
+    $booking->purpose = $purpose;
     $booking->room_id = $room_id;
     $booking->reserved_by = $reserved_by;
     $booking->start = $start;
