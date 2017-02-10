@@ -22,6 +22,8 @@ $app->get('/', function() use ($app) {
     return redirect('booking');
   } catch (\Exception $e) {
     unset($_SESSION['token']);
+    unset($_SESSION['expiresIn']);
+    unset($_SESSION['email']);
     return redirect('login');
   }
 });
@@ -33,6 +35,8 @@ $app->get('/login', function() use ($app) {
     return redirect('booking');
   } catch (\Exception $e) {
     unset($_SESSION['token']);
+    unset($_SESSION['expiresIn']);
+    unset($_SESSION['email']);
   }
 
   $errors = [];
@@ -56,8 +60,11 @@ $app->post('/booking', 'BookingController@postBooking');
 /* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', 'BookingController@getConfirmation');
 
-/* Booking Confirmation */
+/* Booking View */
 $app->get('/booking/view/{booking_id_param}', 'BookingController@getView');
+
+/* Cancel Booking */
+$app->post('/booking/cancel/{booking_id_param}', 'BookingController@postCancel');
 
 /*
  * https://github.com/laravel/socialite
@@ -91,6 +98,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 
     $_SESSION['token'] = $token;
     $_SESSION['expiresIn'] = time() + $expiresIn;
+    $_SESSION['email'] = $user->email;
     return redirect('booking');
   } catch (\Exception $e) {
     return redirect('login');
@@ -101,6 +109,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 $app->get('/logout', function () use ($app) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);
+  unset($_SESSION['email']);
   return redirect('login');
 });
 
@@ -140,4 +149,16 @@ function generateBookingViewRoute($booking_id) {
 function generateBookingViewLink($booking_id) {
   $hostname = env('SILID_HOSTNAME');
   return "$hostname/" . generateBookingViewRoute($booking_id);
+}
+
+/* generateBookingViewRoute */
+function generateBookingCancellationRoute($booking_id) {
+  $booking_id_hashed = encodeBookingIdForView($booking_id);
+
+  return "booking/cancel/$booking_id_hashed";
+}
+
+function generateBookingCancellationLink($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
+  return "$hostname/" . generateBookingCancellationRoute($booking_id);
 }

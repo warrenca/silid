@@ -183,12 +183,14 @@ class BookingController extends Controller
         }
 
         $confirmation_id = encodeBookingIdForConfirmation($booking->id);
+        $cancellation_link = generateBookingCancellationLink($booking->id);
 
         return app()->make('view')->make('booking/view',
                                         [
                                           'booking' => $booking,
                                           'confirmation_id' => $confirmation_id,
-                                          'success_message' => $success_message
+                                          'success_message' => $success_message,
+                                          'cancellation_link' => $cancellation_link
                                         ]
                                       );
       }
@@ -197,6 +199,33 @@ class BookingController extends Controller
     } catch(\Exception $e) {
       return redirect('booking?catch-booking-view');
     }
+  }
+
+  public function postCancel($booking_id_param) {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    try {
+      $booking_id = decodeBookingIdForView($booking_id_param)[0];
+      $booking = Booking::find($booking_id)->first();
+      if ($booking->reserved_by==$_SESSION['email']) {
+        $booking->confirmed = false;
+        $booking->status = 'cancelled';
+        $booking->save();
+
+        unset($_SESSION['booking_errors']);
+        $_SESSION['success'] = "You cancelled your booking";
+
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id));
+      }
+
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+    }
+
   }
 
 }
