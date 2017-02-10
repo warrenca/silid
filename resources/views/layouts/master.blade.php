@@ -23,7 +23,9 @@
     <div class="container">
       <nav>
         <div class="nav-wrapper green accent-4">
-          <a href="javascript:void(0)" class="brand-logo center"><img src="/images/silid-60px.jpg" height="60"/></a>
+          <a href="javascript:void(0)" class="brand-logo center" style="height: 60px">
+            <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
+          </a>
           @if (isset($_SESSION['token']))
           <ul id="dropdown1" class="dropdown-content">
             <li><a href="/booking/list">List all</a></li>

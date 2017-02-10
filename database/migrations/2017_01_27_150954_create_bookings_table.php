@@ -20,6 +20,7 @@ class CreateBookingsTable extends Migration
         $table->bigInteger('room_id')->unsigned();
         $table->foreign('room_id')->references('id')->on('rooms');
         $table->string('reserved_by');
+        $table->string('purpose');
         $table->string('on_behalf_of')->nullable();
         $table->boolean('confirmed')->default(false);
         $table->dateTime('start');

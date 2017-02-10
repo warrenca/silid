@@ -11,13 +11,9 @@
 |
 */
 
-use Illuminate\Support\Facades\Mail;
 use Hashids\Hashids;
 
-use App\Mail\Confirmation as Confirmation;
 use App\Mail\Locked as Locked;
-use App\Booking as Booking;
-use App\Room as Room;
 
 /* Root URL */
 $app->get('/', function() use ($app) {
@@ -48,194 +44,19 @@ $app->get('/login', function() use ($app) {
 });
 
 /* Booking form */
-$app->get('/booking', function () use ($app) {
-  try {
-    \Socialite::driver('google')->userFromToken($_SESSION['token']);
-  } catch (\Exception $e) {
-    return redirect('login');
-  }
-
-  $booking_errors = [];
-  $booking_parameters = [];
-  $success_message = "";
-  $email = "";
-
-  if (isset($_SESSION['booking_errors'])) {
-      $booking_errors = $_SESSION['booking_errors'];
-      unset($_SESSION['booking_errors']);
-  }
-
-  if (isset($_SESSION['booking_parameters'])) {
-    $booking_parameters = $_SESSION['booking_parameters'];
-  }
-
-  if (isset($_SESSION['success'])) {
-      $success_message = $_SESSION['success'];
-      unset($_SESSION['success']);
-  }
-
-  try {
-    $user = \Socialite::driver('google')->userFromToken($_SESSION['token']);
-    $email = $user->email;
-  } catch (\Exception $e) {
-
-  }
-
-  return $app->make('view')->make('booking/index',
-                                  [
-                                    'email' => $email,
-                                    'booking_errors' => $booking_errors,
-                                    'rooms' => Room::all(),
-                                    'booking_durations' => $app['config']['booking.duration'],
-                                    'booking_parameters' => $booking_parameters,
-                                    'success_message' => $success_message
-                                  ]
-                                );
-});
+$app->get('/booking', 'BookingController@getBooking');
 
 /* Booking reset form */
-$app->get('/booking/reset', function () use ($app) {
-  unset($_SESSION['booking_parameters']);
-  return redirect('booking');
-});
+$app->get('/booking/reset', 'BookingController@getReset');
 
 /* Booking saving */
-$app->post('/booking', function () use ($app) {
-  try {
-    \Socialite::driver('google')->userFromToken($_SESSION['token']);
-  } catch (\Exception $e) {
-    return redirect('login');
-  }
-
-  $validator = ValidatorX::make($app->request->all(), [
-    'room_id' => 'required|numeric',
-    'reserved_by' => 'required|email',
-    'booking_date' => 'required',
-    'booking_time' => 'required',
-    'booking_duration' => 'required|numeric',
-  ],
-  [
-    'room_id.required' => 'The room is required'
-  ]);
-
-  $_SESSION['booking_parameters'] = $app->request->all();
-  if ($validator->fails()) {
-    try {
-      $_SESSION['booking_errors'] = $validator->errors()->all();
-    } catch (\Exception $e) {
-      dd($e->getMessage());
-    }
-
-    return redirect('booking');
-  }
-
-  $room_id = $app->request->room_id;
-  $reserved_by = $app->request->reserved_by;
-  $booking_date = $app->request->booking_date;
-  $booking_time = $app->request->booking_time;
-  $booking_duration = $app->request->booking_duration;
-
-  $start_ts = strtotime("$booking_time $booking_date");
-  $start = date('Y-m-d H:i:s', $start_ts);
-
-  $end_ts = $start_ts + $booking_duration;
-  $end = date('Y-m-d H:i:s', $end_ts);
-
-  // http://laraveldaily.com/eloquent-date-filtering-wheredate-and-other-methods/
-  $currentBookings = Booking::where('room_id', $room_id)
-                ->where('confirmed', 1)
-                ->whereDay('start', date('d', $start_ts))
-                ->whereMonth('start', date('m', $start_ts))
-                ->whereYear('start', date('Y', $start_ts))
-                ->get();
-
-  foreach ($currentBookings as $currentBooking) {
-    $booking_start_ts = strtotime($currentBooking->start);
-    $booking_end_ts = strtotime($currentBooking->end);
-
-    // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
-    if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
-      $booking_link = generateBookingViewLink($currentBooking->id);
-      $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
-      return redirect('booking');
-    }
-  }
-
-  $booking = new Booking;
-  $booking->room_id = $room_id;
-  $booking->reserved_by = $reserved_by;
-  $booking->start = $start;
-  $booking->end = $end;
-  $booking->save();
-
-  $_SESSION['success'] = "An email has been sent to you for instruction to confirm and lock-in your booking. Please check it out right away.";
-  Mail::to($reserved_by)
-        ->send(new Confirmation($booking));
-  unset($_SESSION['booking_parameters']);
-
-  return redirect(generateBookingViewRoute($booking->id));
-});
+$app->post('/booking', 'BookingController@postBooking');
 
 /* Booking Confirmation */
-$app->get('/booking/confirmation/{confirmation_id}', function ($confirmation_id) use ($app) {
-  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
-  $booking_id = $hashids->decode($confirmation_id);
-
-  try {
-    $booking = Booking::find($booking_id)->first();
-    $booking->confirmed = 1;
-    $booking->status = 'confirmed';
-    $booking->save();
-
-    if ($booking->count() > 0) {
-      unset($_SESSION['booking_errors']);
-      $_SESSION['success'] = "Your booking is confirmed!";
-      //
-      // Mail::to($booking->reserved_by)
-      //       ->send(new Locked($booking));
-
-      return redirect('booking/view/' . encodeBookingIdForView($booking->id));
-    }
-  } catch(\Exception $e) {
-    dd($e->getMessage());
-    unset($_SESSION['success']);
-    $_SESSION['booking_errors'] = ['That room booking do not exist.'];
-    return redirect('booking');
-  }
-});
+$app->get('/booking/confirmation/{confirmation_id}', 'BookingController@getConfirmation');
 
 /* Booking Confirmation */
-$app->get('/booking/view/{booking_id_param}', function ($booking_id_param) use ($app) {
-  try {
-    $booking = Booking::find(decodeBookingIdForView($booking_id_param))->first();
-
-    if ($booking->count() > 0)
-    {
-      $success_message = '';
-      if (isset($_SESSION['success'])) {
-          $success_message = $_SESSION['success'];
-          unset($_SESSION['success']);
-      }
-
-      $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
-      $confirmation_id = $hashids->encode($booking->id);
-
-      return $app->make('view')->make('booking/view',
-                                      [
-                                        'booking' => $booking,
-                                        'confirmation_id' => $confirmation_id,
-                                        'success_message' => $success_message
-                                      ]
-                                    );
-    }
-
-    return redirect('booking?try-booking-view');
-  } catch(\Exception $e) {
-    return redirect('booking?catch-booking-view');
-    dd($e->getMessage());
-  }
-
-});
+$app->get('/booking/view/{booking_id_param}', 'BookingController@getView');
 
 /*
  * https://github.com/laravel/socialite
@@ -282,6 +103,19 @@ $app->get('/logout', function () use ($app) {
   return redirect('login');
 });
 
+
+/* decode booking id for view */
+function decodeBookingIdForConfirmation($booking_id) {
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
+  return $hashids->decode($booking_id);
+}
+
+/* encode booking id for view */
+function encodeBookingIdForConfirmation($booking_id) {
+  $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
+  return $hashids->encode($booking_id);
+}
+
 /* decode booking id for view */
 function decodeBookingIdForView($booking_id) {
   $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
@@ -296,7 +130,6 @@ function encodeBookingIdForView($booking_id) {
 
 /* generateBookingViewRoute */
 function generateBookingViewRoute($booking_id) {
-  $hostname = env('SILID_HOSTNAME');
   $booking_id_hashed = encodeBookingIdForView($booking_id);
 
   return "booking/view/$booking_id_hashed";
@@ -304,5 +137,6 @@ function generateBookingViewRoute($booking_id) {
 
 /* generateBookingViewLink */
 function generateBookingViewLink($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
   return "$hostname/" . generateBookingViewRoute($booking_id);
 }

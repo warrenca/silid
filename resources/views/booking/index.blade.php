@@ -29,6 +29,12 @@
 
   <form class="col s12" name="booking" method="POST">
     <div class="row">
+      <div class="input-field col s12">
+        <input placeholder="{{$booking_purpose_label}}" id="booking_purpose" type="text" maxlength="10">
+        <label for="booking_purpose">Purpose</label>
+      </div>
+    </div>
+    <div class="row">
       <div class="input-field col s6">
         <select name="room_id">
           <option value="" disabled selected>Select Room</option>
