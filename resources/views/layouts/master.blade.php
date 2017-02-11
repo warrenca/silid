@@ -27,8 +27,9 @@
             <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
           </a>
           @if (isset($_SESSION['token']))
+          <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
           <ul id="dropdown1" class="dropdown-content">
-            <li><a href="/booking/list">List all</a></li>
+            <li><a href="/booking/all">List all</a></li>
             <li><a href="/booking/own">View own</a></li>
           </ul>
           <ul id="nav-mobile" class="hide-on-med-and-down">
@@ -42,6 +43,28 @@
           @endif
         </div>
       </nav>
+
+      @if (isset($_SESSION['token']))
+      <ul id="slide-out" class="side-nav">
+        <li><a href="/booking">Book Now<i class="material-icons">mode_edit</i></a></li>
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion">
+            <li>
+              <a class="collapsible-header">Bookings<i class="material-icons">view_list</i></a>
+              <div class="collapsible-body">
+                <ul>
+                  <li><a href="/booking/all">List all</a></li>
+                  <li><a href="/booking/own">View own</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="bottom">
+          <a class="red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
+        </li>
+      </ul>
+      @endif
 
       <h1 style="color: #13c16c"><img src="/images/silid-60px.jpg" height="60"/>ilid Booking</h1>
 

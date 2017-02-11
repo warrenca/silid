@@ -102,10 +102,14 @@ class BookingController extends Controller
     $booking_time = app()->request->booking_time;
     $booking_duration = app()->request->booking_duration;
 
-    $start_ts = strtotime("$booking_time $booking_date");
-    $start = date('Y-m-d H:i:s', $start_ts);
+    if ($booking_duration == config('booking.dureation.32400')) {
+      $booking_time = "08:30:00";
+    }
 
+    $start_ts = strtotime("$booking_time $booking_date");
     $end_ts = $start_ts + $booking_duration;
+
+    $start = date('Y-m-d H:i:s', $start_ts);
     $end = date('Y-m-d H:i:s', $end_ts);
 
     // http://laraveldaily.com/eloquent-date-filtering-wheredate-and-other-methods/
@@ -210,7 +214,7 @@ class BookingController extends Controller
 
     try {
       $booking_id = decodeBookingIdForView($booking_id_param)[0];
-      $booking = Booking::find($booking_id)->first();
+      $booking = Booking::find($booking_id);
       if ($booking->reserved_by==$_SESSION['email']) {
         $booking->confirmed = false;
         $booking->status = 'cancelled';

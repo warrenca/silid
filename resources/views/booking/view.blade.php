@@ -7,11 +7,10 @@
   </blockquote>
   @endif
 
-  <h4 class="header">
-    Hi {{$booking->reserved_by}}!
-    You have booked for the room:
-    <i>{{$booking->room->name}}</i></h4>
-  <h5>Purpose: <i>{{$booking->purpose}}</i></h5>
+  <h5 class="header">
+    The room was booked by {{$booking->reserved_by}} for the room:
+    <i>{{$booking->room->name}}</i><br/><br/>
+  Purpose: <i>{{$booking->purpose}}</i></h5>
   <div class="card horizontal">
     <div class="card-image">
       <img src="/images/room-{{$booking->room->id}}.jpg">
@@ -19,13 +18,13 @@
     <div class="card-stacked">
       <div class="card-content">
         <ul>
-            <li>Room description: <b>{{$booking->room->description}}</b></li>
             <li>Start: <b>{{date('F d, Y @h:i A', strtotime($booking->start))}}</b></li>
             <li>End: <b>{{date('F d, Y @h:i A', strtotime($booking->end))}}</b></li>
+            <li>Room description: <b>{{$booking->room->description}}</b></li>
             @if ($booking->confirmed && $booking->reserved_by==$_SESSION['email'])
             <li>
               <form action="{{$cancellation_link}}" method="post">
-              <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat">here</button>.
+              <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>.
               </form>
             </li>
             @elseif ($booking->status=='unconfirmed')

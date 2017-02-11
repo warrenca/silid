@@ -10,7 +10,7 @@ return [
     '10800' => '3 hr',
     '12600' => '3.5 hr',
     '14400' => 'Half day (4hrs)',
-    '86400' => 'Full day'
+    '32400' => 'Full day'
   ],
 
   /* These hash length values are constant. You should not change
