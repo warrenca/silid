@@ -29,8 +29,8 @@
           @if (isset($_SESSION['token']))
           <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
           <ul id="dropdown1" class="dropdown-content">
-            <li><a href="/booking/all">List all</a></li>
-            <li><a href="/booking/own">View own</a></li>
+            <li><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">View all</a></li>
+            <li><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">View own</a></li>
           </ul>
           <ul id="nav-mobile" class="hide-on-med-and-down">
             <li><a href="/booking">Book Now</a></li>
@@ -38,6 +38,14 @@
             <li><a class="dropdown-button" href="#!" data-activates="dropdown1">Bookings<i class="material-icons right">arrow_drop_down</i></a></li>
             <li class="right">
               <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
+            </li>
+          </ul>
+          @else
+          <ul id="nav-mobile" class="hide-on-med-and-down">
+            <li>
+              <a href="/socialite/google/login">
+                <img src="/images/btn_google_signin_dark_normal_web.png">
+              </a>
             </li>
           </ul>
           @endif
@@ -53,8 +61,8 @@
               <a class="collapsible-header">Bookings<i class="material-icons">view_list</i></a>
               <div class="collapsible-body">
                 <ul>
-                  <li><a href="/booking/all">List all</a></li>
-                  <li><a href="/booking/own">View own</a></li>
+                  <li><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">View all</a></li>
+                  <li><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">View own</a></li>
                 </ul>
               </div>
             </li>

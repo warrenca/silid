@@ -232,4 +232,48 @@ class BookingController extends Controller
 
   }
 
+  public function getViewAll($date, $status) {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    $start_ts = strtotime($date);
+    $segment2 = app()->request->segment(2);
+    $reserved_by = $_SESSION['email'];
+    $bookings = Booking::where('status', $status)
+                  ->whereDay('start', date('d', $start_ts))
+                  ->whereMonth('start', date('m', $start_ts))
+                  ->whereYear('start', date('Y', $start_ts))
+                  ->when($reserved_by, function ($query) use ($reserved_by) {
+                    if (app()->request->segment(2) == 'view-own') {
+                      return $query->where('reserved_by', $reserved_by);
+                    } else {
+                      return $query;
+                    }
+                  })->get();
+
+    return app()->make('view')->make('booking/listing',
+                                    [
+                                      'bookings' => $bookings,
+                                      'date' => date('d F, Y', $start_ts),
+                                      'status' => $status
+                                    ]
+                                    );
+  }
+
+  public function postViewAll() {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    $booking_date = date('Y-m-d', strtotime(app()->request->booking_date));
+    $status = app()->request->status;
+
+    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status);
+  }
+
 }

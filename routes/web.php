@@ -66,6 +66,14 @@ $app->get('/booking/view/{booking_id_param}', 'BookingController@getView');
 /* Cancel Booking */
 $app->post('/booking/cancel/{booking_id_param}', 'BookingController@postCancel');
 
+/* Booking All */
+$app->get('/booking/view-all/{date}/{status}', 'BookingController@getViewAll');
+$app->post('/booking/view-all/{date}/{status}', 'BookingController@postViewAll');
+
+$app->get('/booking/view-own/{date}/{status}', 'BookingController@getViewAll');
+$app->post('/booking/view-own/{date}/{status}', 'BookingController@postViewAll');
+
+
 /*
  * https://github.com/laravel/socialite
  * http://socialiteproviders.github.io/providers/google+/
@@ -162,3 +170,9 @@ function generateBookingCancellationLink($booking_id) {
   $hostname = env('SILID_HOSTNAME');
   return "$hostname/" . generateBookingCancellationRoute($booking_id);
 }
+
+// \Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {
+//     var_dump($query->sql);
+//     var_dump($query->bindings);
+//     var_dump($query->time);
+// });
