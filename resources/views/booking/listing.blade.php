@@ -68,11 +68,15 @@
 @stop
 
 @section('style')
-.picker__date-display, .picker__weekday-display{
-    background-color: #CCC;
-}
+  @if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+  .picker__date-display, .picker__weekday-display{
+      background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_TOP')}};
+  }
+  @endif
 
-.picker__box{
-    background-color: #CCC;
-}
+  @if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+  .picker__box{
+    background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_BOTTOM')}};
+  }
+  @endif
 @stop

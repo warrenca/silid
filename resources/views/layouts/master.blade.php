@@ -2,7 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Silid Room bookings</title>
+    <title>
+      @if (env('COMPANY_HEADING')!='' && env('COMPANY_NAME')!='')
+        {{env('COMPANY_HEADING')}} | {{env('COMPANY_NAME')}}
+      @else
+        Silid Room bookings
+      @endif
+    </title>
     <!--Import Google Icon Font-->
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -33,7 +39,7 @@
           green accent-5
         @endif
         ">
-          <a href="javascript:void(0)" class="brand-logo center" style="height: 60px">
+          <a href="/" class="brand-logo center" style="height: 60px">
 
             @if( file_exists("images/company/".env('COMPANY_LOGO')))
               <img src="/images/company/{{env('COMPANY_LOGO')}}" height="60" class="z-depth-2"/>

@@ -99,15 +99,15 @@
 @stop
 
 @section('style')
-@if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
-.picker__date-display, .picker__weekday-display{
-    background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_TOP')}};
-}
-@endif
+  @if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+  .picker__date-display, .picker__weekday-display{
+      background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_TOP')}};
+  }
+  @endif
 
-@if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
-.picker__box{
-  background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_BOTTOM')}};
-}
-@endif
+  @if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+  .picker__box{
+    background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_BOTTOM')}};
+  }
+  @endif
 @stop

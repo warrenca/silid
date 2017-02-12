@@ -44,7 +44,7 @@ class BookingController extends Controller
 
     }
 
-    $purpose_labels = ['Stand up', 'Daily Scrum', 'Sprint Review','Sprint Planning', 'GM Meeting', 'Retrospective Meeting', 'Knowledge Sharing'];
+    $purpose_labels = config('booking.purpose_labels');
     $random_purpose = array_rand ( $purpose_labels, 1 );
 
     return app()->make('view')->make('booking/index',
