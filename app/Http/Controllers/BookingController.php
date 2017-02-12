@@ -254,11 +254,25 @@ class BookingController extends Controller
                     }
                   })->get();
 
+    $confirmed_active = '';
+    $unconfirmed_active = '';
+    $cancelled_active = '';
+    if (app()->request->segment(4)=='confirmed') {
+      $confirmed_active = 'green lighten-4';
+    } else if (app()->request->segment(4)=='unconfirmed') {
+      $unconfirmed_active = 'green lighten-4';
+    } else if (app()->request->segment(4)=='cancelled'){
+      $cancelled_active = 'green lighten-4';
+    }
+
     return app()->make('view')->make('booking/listing',
                                     [
                                       'bookings' => $bookings,
                                       'date' => date('d F, Y', $start_ts),
-                                      'status' => $status
+                                      'status' => $status,
+                                      'confirmed_active' => $confirmed_active,
+                                      'unconfirmed_active' => $unconfirmed_active,
+                                      'cancelled_active' => $cancelled_active,
                                     ]
                                     );
   }

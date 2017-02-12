@@ -40,7 +40,7 @@
               <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
             </li>
           </ul>
-          @else
+          @elseif (app()->request->segment(1) != 'login' && !isset($_SESSION['token']))
           <ul id="nav-mobile" class="hide-on-med-and-down">
             <li>
               <a href="/socialite/google/login">
@@ -68,7 +68,9 @@
             </li>
           </ul>
         </li>
-        <li class="bottom">
+        <li><div class="divider"></div></li>
+        <li><div class="divider"></div></li>
+        <li>
           <a class="red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
         </li>
       </ul>
