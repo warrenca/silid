@@ -21,7 +21,7 @@
             <li>Start: <b>{{date('F d, Y @h:i A', strtotime($booking->start))}}</b></li>
             <li>End: <b>{{date('F d, Y @h:i A', strtotime($booking->end))}}</b></li>
             <li>Room description: <b>{{$booking->room->description}}</b></li>
-            @if ($booking->confirmed && $booking->reserved_by==$_SESSION['email'])
+            @if (isset($_SESSION['email']) && $booking->reserved_by==$_SESSION['email'] && $booking->confirmed)
             <li>
               <form action="{{$cancellation_link}}" method="post">
               <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>.
