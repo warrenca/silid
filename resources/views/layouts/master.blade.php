@@ -40,8 +40,7 @@
         @endif
         ">
           <a href="/" class="brand-logo center" style="height: 60px">
-
-            @if( file_exists("images/company/".env('COMPANY_LOGO')))
+            @if( file_exists("images/company/".env('COMPANY_LOGO')) && !is_dir("images/company/".env('COMPANY_LOGO')) )
               <img src="/images/company/{{env('COMPANY_LOGO')}}" height="60" class="z-depth-2"/>
             @else
               <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
