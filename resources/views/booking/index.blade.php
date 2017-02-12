@@ -83,11 +83,31 @@
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <button class="btn waves-effect waves-light light-blue accent-3" type="submit" name="action">Submit
+        <button class="btn waves-effect waves-light
+        @if (env('COMPANY_BASE_THEME_COLOR')!='')
+          {{env('COMPANY_BASE_THEME_COLOR')}}
+        @else
+          green accent-5
+        @endif
+        " type="submit" name="action">Submit
           <i class="material-icons right">send</i>
         </button>
         <a href="/booking/reset" onclick="return confirm('Are you sure you want to clear the form?')" class="waves-effect waves-teal btn-flat">Reset</a>
       </div>
     </div>
   </form>
+@stop
+
+@section('style')
+@if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+.picker__date-display, .picker__weekday-display{
+    background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_TOP')}};
+}
+@endif
+
+@if (env('COMPANY_PICKADATE_THEME_COLOR_TOP')!='')
+.picker__box{
+  background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_BOTTOM')}};
+}
+@endif
 @stop

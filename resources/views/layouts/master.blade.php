@@ -18,13 +18,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
     <script src="/js/pickadate.js/lib/picker.time.js"></script>
     <script src="/js/scripts.js"></script>
+    <style>
+    @yield('style')
+    </style>
   </head>
   <body>
-    <div class="container">
+    <header>
+    <div>
       <nav>
-        <div class="nav-wrapper green accent-4">
+        <div class="nav-wrapper
+        @if(env('COMPANY_BASE_THEME_COLOR')!='')
+          {{env('COMPANY_BASE_THEME_COLOR')}}
+        @else
+          green accent-5
+        @endif
+        ">
           <a href="javascript:void(0)" class="brand-logo center" style="height: 60px">
-            <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
+
+            @if( file_exists("images/company/".env('COMPANY_LOGO')))
+              <img src="/images/company/{{env('COMPANY_LOGO')}}" height="60" class="z-depth-2"/>
+            @else
+              <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
+            @endif
           </a>
           @if (isset($_SESSION['token']))
           <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -76,9 +91,37 @@
       </ul>
       @endif
 
-      <h1 style="color: #13c16c"><img src="/images/silid-60px.jpg" height="60"/>ilid Booking</h1>
-
-      @yield('content')
+      <div class="container">
+      @if (env('COMPANY_HEADING')!='')
+      <h4 class="{{env('COMPANY_BASE_COLOR')}}">{{env('COMPANY_HEADING')}}</h4>
+      @else
+      <h1 class="green-text"><img src="/images/silid-60px.jpg" height="60"/>ilid Booking</h1>
+      @endif
+      </div>
     </div>
+    </header>
+    <main>
+      <div class="container">
+        @yield('content')
+      </div>
+    </main>
+
+    <div>
+      <footer class="page-footer
+        @if(env('COMPANY_BASE_THEME_COLOR')!='')
+          {{env('COMPANY_BASE_THEME_COLOR')}}
+        @else
+          green accent-5
+        @endif
+        ">
+         <div class="footer-copyright">
+           <div class="container">
+           Powered by Silid Booking 2017
+           <a class="grey-text text-lighten-4 right" href="https://github.com/warrenca/silid">Silid@GitHub</a>
+           </div>
+         </div>
+      </footer>
+    </div>
+
   </body>
   </html>

@@ -18,7 +18,13 @@
     </div>
     <input type="hidden" name="status" value="{{$status}}">
     <div class="input-field col s4">
-      <button class="btn waves-effect waves-light light-blue accent-3" type="submit" name="action">Submit
+      <button class="btn waves-effect waves-light
+      @if (env('COMPANY_BASE_THEME_COLOR')!='')
+        {{env('COMPANY_BASE_THEME_COLOR')}}
+      @else
+        green accent-5
+      @endif
+      " type="submit" name="action">Submit
         <i class="material-icons right">send</i>
       </button>
     </div>
@@ -59,4 +65,14 @@
      @endforelse
    </tbody>
  </table>
+@stop
+
+@section('style')
+.picker__date-display, .picker__weekday-display{
+    background-color: #CCC;
+}
+
+.picker__box{
+    background-color: #CCC;
+}
 @stop
