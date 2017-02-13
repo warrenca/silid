@@ -17,7 +17,7 @@
   <div class="col s12 m2 center-align">
     <p class="z-depth-3" style="padding: 15px 0"># Sign-in with Google! using an email from the following allowed domains: {{$allowed_domains}}<br/>
       <a href="/socialite/google/login">
-        <img src="/images/btn_google_signin_dark_normal_web.png">
+        <img src="/images/btn_google_signin_dark_normal_web.png" height="30">
       </a>
     </p>
   </div>

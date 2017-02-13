@@ -19,3 +19,21 @@ body {
 main {
   flex: 1 0 auto;
 }
+
+/* label focus color */
+.input-field input[type=text]:focus + label {
+  color: #000;
+}
+/* label underline focus color */
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #000;
+  box-shadow: 0 1px 0 0 #000;
+}
+
+ul.dropdown-content.select-dropdown li span, ul.dropdown-content li a {
+  color: #000; /* no need for !important :) */
+}
+
+ul.dropdown-content.select-dropdown li.disabled span {
+  color: #a3a3a3; /* no need for !important :) */
+}

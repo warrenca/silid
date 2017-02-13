@@ -57,14 +57,14 @@
             <!-- Dropdown Trigger -->
             <li @if(app()->request->segment(2)=='view-all' || app()->request->segment(2)=='view-own') class="active"@endif><a class="dropdown-button" href="#!" data-activates="dropdown1">Bookings<i class="material-icons right">arrow_drop_down</i></a></li>
             <li class="right">
-              <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out<i class="material-icons">power_settings_new</i></a>
+              <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out</a>
             </li>
           </ul>
           @elseif (app()->request->segment(1) != 'login' && !isset($_SESSION['token']))
           <ul id="nav-mobile" class="hide-on-med-and-down">
             <li>
               <a href="/socialite/google/login">
-                <img src="/images/google-sign-in-white.jpg" height="40" style="vertical-align:middle">
+                <img src="/images/btn_google_signin_dark_normal_web.png" height="30" style="vertical-align:middle">
               </a>
             </li>
           </ul>
