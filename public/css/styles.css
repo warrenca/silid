@@ -6,6 +6,16 @@ blockquote.success {
   border-left: 5px solid #66bb6a;
 }
 
-#booking_purpose {
+#purpose {
   font-size: 30px;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }

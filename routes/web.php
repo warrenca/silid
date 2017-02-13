@@ -22,6 +22,8 @@ $app->get('/', function() use ($app) {
     return redirect('booking');
   } catch (\Exception $e) {
     unset($_SESSION['token']);
+    unset($_SESSION['expiresIn']);
+    unset($_SESSION['email']);
     return redirect('login');
   }
 });
@@ -30,8 +32,11 @@ $app->get('/', function() use ($app) {
 $app->get('/login', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    return redirect('booking');
   } catch (\Exception $e) {
     unset($_SESSION['token']);
+    unset($_SESSION['expiresIn']);
+    unset($_SESSION['email']);
   }
 
   $errors = [];
@@ -55,8 +60,19 @@ $app->post('/booking', 'BookingController@postBooking');
 /* Booking Confirmation */
 $app->get('/booking/confirmation/{confirmation_id}', 'BookingController@getConfirmation');
 
-/* Booking Confirmation */
+/* Booking View */
 $app->get('/booking/view/{booking_id_param}', 'BookingController@getView');
+
+/* Cancel Booking */
+$app->post('/booking/cancel/{booking_id_param}', 'BookingController@postCancel');
+
+/* Booking All */
+$app->get('/booking/view-all/{date}/{status}', 'BookingController@getViewAll');
+$app->post('/booking/view-all/{date}/{status}', 'BookingController@postViewAll');
+
+$app->get('/booking/view-own/{date}/{status}', 'BookingController@getViewAll');
+$app->post('/booking/view-own/{date}/{status}', 'BookingController@postViewAll');
+
 
 /*
  * https://github.com/laravel/socialite
@@ -90,6 +106,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 
     $_SESSION['token'] = $token;
     $_SESSION['expiresIn'] = time() + $expiresIn;
+    $_SESSION['email'] = $user->email;
     return redirect('booking');
   } catch (\Exception $e) {
     return redirect('login');
@@ -100,6 +117,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 $app->get('/logout', function () use ($app) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);
+  unset($_SESSION['email']);
   return redirect('login');
 });
 
@@ -140,3 +158,21 @@ function generateBookingViewLink($booking_id) {
   $hostname = env('SILID_HOSTNAME');
   return "$hostname/" . generateBookingViewRoute($booking_id);
 }
+
+/* generateBookingViewRoute */
+function generateBookingCancellationRoute($booking_id) {
+  $booking_id_hashed = encodeBookingIdForView($booking_id);
+
+  return "booking/cancel/$booking_id_hashed";
+}
+
+function generateBookingCancellationLink($booking_id) {
+  $hostname = env('SILID_HOSTNAME');
+  return "$hostname/" . generateBookingCancellationRoute($booking_id);
+}
+
+// \Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {
+//     var_dump($query->sql);
+//     var_dump($query->bindings);
+//     var_dump($query->time);
+// });

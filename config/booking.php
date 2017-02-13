@@ -10,7 +10,19 @@ return [
     '10800' => '3 hr',
     '12600' => '3.5 hr',
     '14400' => 'Half day (4hrs)',
-    '86400' => 'Full day'
+    '32400' => 'Full day (8:30am-6pm)'
+  ],
+  'purpose_labels' => [
+    'Stand up',
+    'GM Meeting',
+    'Daily Scrum',
+    'Sprint Review',
+    'Staff Meetings',
+    'Sprint Planning',
+    'Project Meetings',
+    'Knowledge Sharing',
+    'Retrospective Meeting',
+    'Collaborative Meetings',
   ],
 
   /* These hash length values are constant. You should not change

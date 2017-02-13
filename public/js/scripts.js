@@ -18,5 +18,14 @@ $(document).ready(function(){
     }
   });
 
+  $('.listing-datepicker').pickadate({
+    onSet: function (ele) {
+       if(ele.select){
+              this.close();
+       }
+    }
+  });
+
   $('select').material_select();
+  $(".button-collapse").sideNav();
 });

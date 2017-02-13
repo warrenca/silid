@@ -44,7 +44,7 @@ class BookingController extends Controller
 
     }
 
-    $purpose_labels = ['Stand up', 'Daily Scrum', 'Sprint Review','Sprint Planning', 'GM Meeting', 'Retrospective Meeting', 'Knowledge Sharing'];
+    $purpose_labels = config('booking.purpose_labels');
     $random_purpose = array_rand ( $purpose_labels, 1 );
 
     return app()->make('view')->make('booking/index',
@@ -55,7 +55,7 @@ class BookingController extends Controller
                                       'booking_durations' => app()['config']['booking.duration'],
                                       'booking_parameters' => $booking_parameters,
                                       'success_message' => $success_message,
-                                      'booking_purpose_label' => $purpose_labels[$random_purpose]
+                                      'purpose_label' => $purpose_labels[$random_purpose]
                                     ]
                                   );
   }
@@ -74,11 +74,11 @@ class BookingController extends Controller
 
     $validator = \ValidatorX::make(app()->request->all(), [
       'room_id' => 'required|numeric',
+      'purpose' => 'required|max:255',
       'reserved_by' => 'required|email',
       'booking_date' => 'required',
       'booking_time' => 'required',
       'booking_duration' => 'required|numeric',
-      'booking_purpose' => 'required|max:255',
     ],
     [
       'room_id.required' => 'The room is required'
@@ -96,15 +96,20 @@ class BookingController extends Controller
     }
 
     $room_id = app()->request->room_id;
+    $purpose = app()->request->purpose;
     $reserved_by = app()->request->reserved_by;
     $booking_date = app()->request->booking_date;
     $booking_time = app()->request->booking_time;
     $booking_duration = app()->request->booking_duration;
 
-    $start_ts = strtotime("$booking_time $booking_date");
-    $start = date('Y-m-d H:i:s', $start_ts);
+    if ($booking_duration == config('booking.dureation.32400')) {
+      $booking_time = "08:30:00";
+    }
 
+    $start_ts = strtotime("$booking_time $booking_date");
     $end_ts = $start_ts + $booking_duration;
+
+    $start = date('Y-m-d H:i:s', $start_ts);
     $end = date('Y-m-d H:i:s', $end_ts);
 
     // http://laraveldaily.com/eloquent-date-filtering-wheredate-and-other-methods/
@@ -128,6 +133,7 @@ class BookingController extends Controller
     }
 
     $booking = new Booking;
+    $booking->purpose = $purpose;
     $booking->room_id = $room_id;
     $booking->reserved_by = $reserved_by;
     $booking->start = $start;
@@ -181,12 +187,14 @@ class BookingController extends Controller
         }
 
         $confirmation_id = encodeBookingIdForConfirmation($booking->id);
+        $cancellation_link = generateBookingCancellationLink($booking->id);
 
         return app()->make('view')->make('booking/view',
                                         [
                                           'booking' => $booking,
                                           'confirmation_id' => $confirmation_id,
-                                          'success_message' => $success_message
+                                          'success_message' => $success_message,
+                                          'cancellation_link' => $cancellation_link
                                         ]
                                       );
       }
@@ -195,6 +203,91 @@ class BookingController extends Controller
     } catch(\Exception $e) {
       return redirect('booking?catch-booking-view');
     }
+  }
+
+  public function postCancel($booking_id_param) {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    try {
+      $booking_id = decodeBookingIdForView($booking_id_param)[0];
+      $booking = Booking::find($booking_id);
+      if ($booking->reserved_by==$_SESSION['email']) {
+        $booking->confirmed = false;
+        $booking->status = 'cancelled';
+        $booking->save();
+
+        unset($_SESSION['booking_errors']);
+        $_SESSION['success'] = "You cancelled your booking";
+
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id));
+      }
+
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+    }
+
+  }
+
+  public function getViewAll($date, $status) {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    $start_ts = strtotime($date);
+    $segment2 = app()->request->segment(2);
+    $reserved_by = $_SESSION['email'];
+    $bookings = Booking::where('status', $status)
+                  ->whereDay('start', date('d', $start_ts))
+                  ->whereMonth('start', date('m', $start_ts))
+                  ->whereYear('start', date('Y', $start_ts))
+                  ->when($reserved_by, function ($query) use ($reserved_by) {
+                    if (app()->request->segment(2) == 'view-own') {
+                      return $query->where('reserved_by', $reserved_by);
+                    } else {
+                      return $query;
+                    }
+                  })->get();
+
+    $confirmed_active = '';
+    $unconfirmed_active = '';
+    $cancelled_active = '';
+    if (app()->request->segment(4)=='confirmed') {
+      $confirmed_active = 'green lighten-4';
+    } else if (app()->request->segment(4)=='unconfirmed') {
+      $unconfirmed_active = 'green lighten-4';
+    } else if (app()->request->segment(4)=='cancelled'){
+      $cancelled_active = 'green lighten-4';
+    }
+
+    return app()->make('view')->make('booking/listing',
+                                    [
+                                      'bookings' => $bookings,
+                                      'date' => date('d F, Y', $start_ts),
+                                      'status' => $status,
+                                      'confirmed_active' => $confirmed_active,
+                                      'unconfirmed_active' => $unconfirmed_active,
+                                      'cancelled_active' => $cancelled_active,
+                                    ]
+                                    );
+  }
+
+  public function postViewAll() {
+    try {
+      \Socialite::driver('google')->userFromToken($_SESSION['token']);
+    } catch (\Exception $e) {
+      return redirect('login');
+    }
+
+    $booking_date = date('Y-m-d', strtotime(app()->request->booking_date));
+    $status = app()->request->status;
+
+    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status);
   }
 
 }
