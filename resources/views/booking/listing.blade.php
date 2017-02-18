@@ -32,7 +32,6 @@
 </form>
 
 <a class="waves-effect waves-teal btn-flat {{$confirmed_active}}" href="/booking/{{app()->request->segment(2)}}/{{app()->request->segment(3)}}/confirmed">Confirmed</a>
-<a class="waves-effect waves-teal btn-flat {{$unconfirmed_active}}" href="/booking/{{app()->request->segment(2)}}/{{app()->request->segment(3)}}/unconfirmed">Unconfirmed</a>
 <a class="waves-effect waves-teal btn-flat {{$cancelled_active}}" href="/booking/{{app()->request->segment(2)}}/{{app()->request->segment(3)}}/cancelled">Cancelled</a>
 
 

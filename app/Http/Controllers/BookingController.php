@@ -8,6 +8,9 @@ use App\Booking as Booking;
 use App\Room as Room;
 use Log;
 
+define('DEFAULT_BOOKING_STATUS', 'confirmed');
+define('DEFAULT_BOOKING_CONFIRMED', 1);
+
 class BookingController extends Controller
 {
 
@@ -138,9 +141,11 @@ class BookingController extends Controller
     $booking->reserved_by = $reserved_by;
     $booking->start = $start;
     $booking->end = $end;
+    $booking->status = DEFAULT_BOOKING_STATUS;
+    $booking->confirmed = DEFAULT_BOOKING_CONFIRMED;
     $booking->save();
 
-    $_SESSION['success'] = "An email has been sent to you for instruction to confirm and lock-in your booking. Please check it out right away.";
+    $_SESSION['success'] = "An email confirmation has been sent to you.";
     Mail::to($reserved_by)
           ->send(new Confirmation($booking));
     unset($_SESSION['booking_parameters']);

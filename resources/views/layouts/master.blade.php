@@ -48,17 +48,10 @@
           </a>
           @if (isset($_SESSION['token']))
           <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
-          <ul id="dropdown1" class="dropdown-content">
-            <li @if(app()->request->segment(2)=='view-all') class="active"@endif><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">View all</a></li>
-            <li @if(app()->request->segment(2)=='view-own') class="active"@endif><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">View own</a></li>
-          </ul>
           <ul id="nav-mobile" class="hide-on-med-and-down">
             <li @if(app()->request->is('booking')) class='active'@endif><a href="/booking">Book Now</a></li>
-            <!-- Dropdown Trigger -->
-            <li @if(app()->request->segment(2)=='view-all' || app()->request->segment(2)=='view-own') class="active"@endif><a class="dropdown-button" href="#!" data-activates="dropdown1">Bookings<i class="material-icons right">arrow_drop_down</i></a></li>
-            <li class="right">
-              <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out</a>
-            </li>
+            <li @if(app()->request->segment(2)=='view-all') class="active"@endif><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">All Bookings</a></li>
+            <li @if(app()->request->segment(2)=='view-own') class="active"@endif><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">Own Bookings</a></li>
           </ul>
           @elseif (app()->request->segment(1) != 'login' && !isset($_SESSION['token']))
           <ul id="nav-mobile" class="hide-on-med-and-down">
@@ -75,19 +68,8 @@
       @if (isset($_SESSION['token']))
       <ul id="slide-out" class="side-nav">
         <li><a href="/booking">Book Now<i class="material-icons">mode_edit</i></a></li>
-        <li class="no-padding">
-          <ul class="collapsible collapsible-accordion">
-            <li>
-              <a class="collapsible-header">Bookings<i class="material-icons">view_list</i></a>
-              <div class="collapsible-body">
-                <ul>
-                  <li><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">View all</a></li>
-                  <li><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">View own</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </li>
+        <li><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">All Bookings<i class="material-icons">view_list</i></a></li>
+        <li><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">Own Bookings<i class="material-icons">view_list</i></a></li>
         <li><div class="divider"></div></li>
         <li><div class="divider"></div></li>
         <li>
