@@ -80,11 +80,12 @@ class BookingController extends Controller
       'purpose' => 'required|max:255',
       'reserved_by' => 'required|email',
       'booking_date' => 'required',
-      'booking_time' => 'required',
-      'booking_duration' => 'required|numeric',
+      'booking_time' => 'required_if:booking_duration,1800,3600,5400,7200,9000,10800,12600',
+      'booking_duration' => 'required',
     ],
     [
-      'room_id.required' => 'The room is required'
+      'room_id.required' => 'The room is required',
+      'booking_time.required_if' => 'The booking time is required.'
     ]);
 
     $_SESSION['booking_parameters'] = app()->request->all();
@@ -102,11 +103,21 @@ class BookingController extends Controller
     $purpose = app()->request->purpose;
     $reserved_by = app()->request->reserved_by;
     $booking_date = app()->request->booking_date;
-    $booking_time = app()->request->booking_time;
     $booking_duration = app()->request->booking_duration;
 
-    if ($booking_duration == config('booking.dureation.32400')) {
+    if ($booking_duration == 'full-day' ||
+        $booking_duration == 'am-half') {
       $booking_time = "08:30:00";
+    } else if ($booking_duration == 'pm-half') {
+      $booking_time = "01:30:00";
+    } else {
+      $booking_time = app()->request->booking_time;
+    }
+
+    if ($booking_duration == 'am-half') {
+      $booking_duration = 14400;
+    } else if ($booking_duration == 'pm-half' ) {
+      $booking_duration = 16200;
     }
 
     $start_ts = strtotime("$booking_time $booking_date");

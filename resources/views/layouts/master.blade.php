@@ -27,6 +27,7 @@
     <style>
     @yield('style')
     </style>
+    @yield('script')
   </head>
   <body>
     <header>
@@ -52,6 +53,9 @@
             <li @if(app()->request->is('booking')) class='active'@endif><a href="/booking">Book Now</a></li>
             <li @if(app()->request->segment(2)=='view-all') class="active"@endif><a href="/booking/view-all/{{date('Y-m-d')}}/confirmed">All Bookings</a></li>
             <li @if(app()->request->segment(2)=='view-own') class="active"@endif><a href="/booking/view-own/{{date('Y-m-d')}}/confirmed">Own Bookings</a></li>
+            <li class="right">
+              <a class="waves-effect waves-light btn red accent-3" href="/logout" onclick="return confirm('Are you sure you want to Sign-out?')">Sign out</a>
+            </li>
           </ul>
           @elseif (app()->request->segment(1) != 'login' && !isset($_SESSION['token']))
           <ul id="nav-mobile" class="hide-on-med-and-down">

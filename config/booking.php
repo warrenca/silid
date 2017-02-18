@@ -9,8 +9,9 @@ return [
     '9000' => '2.5 hr',
     '10800' => '3 hr',
     '12600' => '3.5 hr',
-    '14400' => 'Half day (4hrs)',
-    '32400' => 'Full day (8:30am-6pm)'
+    'am-half' => 'AM Half (08:30 - 12:30)',
+    'pm-half' => 'PM Half (01:30 - 06:00)',
+    'full-day' => 'Full day (8:30am-6pm)'
   ],
   'purpose_labels' => [
     'Stand up',
