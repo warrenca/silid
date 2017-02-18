@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  mysqlServer:
+    image: mysql:5.6
+    volumes:
+      - ./mysql-server/datadir:/var/lib/mysql
+      - ./mysql-server/db.sql:/docker-entrypoint-initdb.d/db.sql
+    env_file:
+      - .env
+    ports:
+      - "6603:3306"
+    expose:
+      - "6603"
+  silid:
+    build: ./
+    image: warrenca/silid
+    ports:
+      - "8080:8000"
+    expose:
+      - "8080"
+    env_file:
+      - .env
+    depends_on:
+      - mysqlServer

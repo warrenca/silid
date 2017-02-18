@@ -11,4 +11,6 @@ RUN docker-php-source extract \
     && a2enmod ssl \
     && docker-php-source delete
 RUN cd /var/www/ && php composer.phar install \
-    && chmod 777 -Rf /var/www/storage
+    && chmod 777 -Rf /var/www/storage \
+    && php artisan migrate \
+    && php artisan db:seed
