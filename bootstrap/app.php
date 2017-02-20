@@ -97,9 +97,14 @@ class_alias(Illuminate\Support\Facades\Validator::class, 'ValidatorX');
 
 $app->register(Illuminate\Mail\MailServiceProvider::class);
 
+$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
+class_alias(Illuminate\Support\Facades\Storage::class, 'Storage');
+
 $app->configure('services');
 $app->configure('booking');
 $app->configure('mail');
+$app->configure('filesystems');
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

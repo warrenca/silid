@@ -13,7 +13,9 @@
         "laravel/socialite": "^3.0",
         "socialiteproviders/google": "^3.0",
         "illuminate/mail": "^5.4",
-        "hashids/hashids": "^2.0"
+        "hashids/hashids": "^2.0",
+        "calendar/icsfile": "^3.2",
+        "league/flysystem-aws-s3-v3": "~1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

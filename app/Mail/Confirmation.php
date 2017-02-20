@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Mail\Mailable;
 
+use Ical\Ical;
 use App\Booking;
 use Hashids\Hashids;
 
@@ -26,6 +27,8 @@ class Confirmation extends Mailable
      */
     public function build()
     {
+        $this->generateIcs();
+
         // https://github.com/laravel/lumen/blob/60776a0d763ac8a255ac14008e4edda25d2224b1/.env.example
         // https://laracasts.com/discuss/channels/lumen/lumen-52-mail-not-working
         $hostname = env('SILID_HOSTNAME');
@@ -43,6 +46,25 @@ class Confirmation extends Mailable
                         'booking_room_description' => $this->booking->room->description,
                         'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),
                         'booking_end' => date('F d, Y @H:i A', strtotime($this->booking->end)),
-                    ]);
+                    ])
+                    ->attach("calendar-files/{$this->booking->id}.ics");
+    }
+
+    private function generateIcs() {
+      try {
+        $ical = (new Ical())->setAddress($this->booking->room->name)
+                ->setDateStart(new \DateTime($this->booking->start))
+                ->setDateEnd(new \DateTime($this->booking->end))
+                ->setDescription($this->booking->room->description)
+                ->setSummary($this->booking->purpose)
+                ->setTimezone('Asia/Singapore')
+                ->setAlarm(900);
+                // Add organizer
+                // ORGANIZER;CN="Sally Example":mailto:sally@example.com
+
+        \Storage::disk('calendar-files')->put("{$this->booking->id}.ics", $ical->getICAL());
+      } catch (\Exception $exc) {
+        \Log::error($exc->getMessage());
+      }
     }
 }
