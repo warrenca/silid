@@ -15,21 +15,23 @@ use Hashids\Hashids;
 
 use App\Mail\Locked as Locked;
 
+$secure = env('APP_ENV')==='local' ? false : true;
+
 /* Root URL */
-$app->get('/', function() use ($app) {
+$app->get('/', function() use ($app, $secure) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
-    return redirect('booking', 302, [], true);
+    return redirect('booking', 302, [], $secure);
   } catch (\Exception $e) {
     unset($_SESSION['token']);
     unset($_SESSION['expiresIn']);
     unset($_SESSION['email']);
-    return redirect('login', 302, [], true);
+    return redirect('login', 302, [], $secure);
   }
 });
 
 /* Login page */
-$app->get('/login', function() use ($app) {
+$app->get('/login', function() use ($app, $secure) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
     return redirect('booking', 302, [], true);
@@ -82,12 +84,12 @@ $app->post('/booking/view-own/{date}/{status}', 'BookingController@postViewAll')
  * http://itsolutionstuff.com/post/solved-access-not-configured-google-api-truncated-on-google-console-developerexample.html
  * http://stackoverflow.com/questions/35536548/unable-to-use-laravel-socialite-with-lumen
  */
-$app->get('/socialite/google/login', function () use ($app) {
+$app->get('/socialite/google/login', function () use ($app, $secure) {
   return \Socialite::driver('google')->stateless(false)->redirect();
 });
 
 /* Socialite Google callback - after google login */
-$app->get('/socialite/google/callback', function () use ($app) {
+$app->get('/socialite/google/callback', function () use ($app, $secure) {
   try {
     $user = \Socialite::driver('google')->stateless(false)->user();
 
@@ -97,7 +99,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 
     if (! in_array($hostname, explode(",",env('SILID_ALLOWED_DOMAINS')))) {
       $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from the allowed domains.'];
-      return redirect('login', 302, [], true);
+      return redirect('login', 302, [], $secure);
     }
 
     // OAuth Two Providers
@@ -107,18 +109,18 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $_SESSION['token'] = $token;
     $_SESSION['expiresIn'] = time() + $expiresIn;
     $_SESSION['email'] = $user->email;
-    return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed', 302, [], true);
+    return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed', 302, [], $secure);
   } catch (\Exception $e) {
-    return redirect('login', 302, [], true);
+    return redirect('login', 302, [], $secure);
   }
 });
 
 /* Logout */
-$app->get('/logout', function () use ($app) {
+$app->get('/logout', function () use ($app, $secure) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);
   unset($_SESSION['email']);
-  return redirect('login', 302, [], true);
+  return redirect('login', 302, [], $secure);
 });
 
 
