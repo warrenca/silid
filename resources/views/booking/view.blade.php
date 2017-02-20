@@ -24,7 +24,7 @@
             @if (isset($_SESSION['email']) && $booking->reserved_by==$_SESSION['email'] && $booking->confirmed)
             <li>
               <form action="{{$cancellation_link}}" method="post">
-              <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>.
+              <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>
               </form>
             </li>
             @elseif ($booking->status=='unconfirmed')

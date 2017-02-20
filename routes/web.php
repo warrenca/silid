@@ -107,7 +107,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $_SESSION['token'] = $token;
     $_SESSION['expiresIn'] = time() + $expiresIn;
     $_SESSION['email'] = $user->email;
-    return redirect('booking');
+    return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed');
   } catch (\Exception $e) {
     return redirect('login');
   }

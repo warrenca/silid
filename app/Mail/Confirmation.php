@@ -29,16 +29,16 @@ class Confirmation extends Mailable
         // https://github.com/laravel/lumen/blob/60776a0d763ac8a255ac14008e4edda25d2224b1/.env.example
         // https://laracasts.com/discuss/channels/lumen/lumen-52-mail-not-working
         $hostname = env('SILID_HOSTNAME');
-        $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.CONFIRMATION_HASH_LENGTH'));
+        $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
 
-        $confirmation_id = $hashids->encode($this->booking->id);
-
-        $confirmation_link = "$hostname/booking/confirmation/$confirmation_id";
-        return $this->view('emails.confirmation')
-                    ->subject('Silid Room Booking Confirmation - Reference Code: ' . $confirmation_id)
+        $booking_view_link = "$hostname/booking/view/" . $hashids->encode($this->booking->id);
+        return $this->view('emails.cerberus-responsive')
+                    ->subject('Silid Room Booking Confirmation - Reference Code: ' . str_pad($this->booking->id, 10, "0", STR_PAD_LEFT))
                     ->with([
-                        'confirmation_link' => $confirmation_link,
+                        'booking_view_link' => $booking_view_link,
                         'purpose' => $this->booking->purpose,
+                        'booking_reserved_by' => $this->booking->reserved_by,
+                        'booking_room_id' => $this->booking->room->id,
                         'booking_room_name' => $this->booking->room->name,
                         'booking_room_description' => $this->booking->room->description,
                         'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),

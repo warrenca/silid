@@ -67,7 +67,7 @@
         <label for="booking_time">Select booking time</label>
       </div>
       <div class="input-field col s6">
-        <select name="booking_duration">
+        <select name="booking_duration" id="booking_duration">
           <option value="" disabled selected>Booking duration</option>
           @foreach ($booking_durations as $duration => $label)
             <option value="{{$duration}}"
@@ -110,4 +110,20 @@
     background-color: {{env('COMPANY_PICKADATE_THEME_COLOR_BOTTOM')}};
   }
   @endif
+@stop
+
+
+@section('script')
+<script>
+$(document).ready(function(){
+  $('#purpose').focus();
+  $('#booking_duration').change(function(){
+    if (!Number.isInteger( parseInt($(this).val()) )) {
+      $('#booking_time').attr('disabled', 'true');
+    } else {
+      $('#booking_time').removeAttr('disabled');
+    }
+  })
+})
+</script>
 @stop
