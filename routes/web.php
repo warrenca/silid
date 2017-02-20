@@ -19,12 +19,12 @@ use App\Mail\Locked as Locked;
 $app->get('/', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
-    return redirect('booking');
+    return redirect('booking', 302, [], true);
   } catch (\Exception $e) {
     unset($_SESSION['token']);
     unset($_SESSION['expiresIn']);
     unset($_SESSION['email']);
-    return redirect('login');
+    return redirect('login', 302, [], true);
   }
 });
 
@@ -32,7 +32,7 @@ $app->get('/', function() use ($app) {
 $app->get('/login', function() use ($app) {
   try {
     \Socialite::driver('google')->userFromToken($_SESSION['token']);
-    return redirect('booking');
+    return redirect('booking', 302, [], true);
   } catch (\Exception $e) {
     unset($_SESSION['token']);
     unset($_SESSION['expiresIn']);
@@ -97,7 +97,7 @@ $app->get('/socialite/google/callback', function () use ($app) {
 
     if (! in_array($hostname, explode(",",env('SILID_ALLOWED_DOMAINS')))) {
       $_SESSION['errors'] = ['Your email is not part of the allowed domains. Please sign-in with an email from the allowed domains.'];
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     // OAuth Two Providers
@@ -107,9 +107,9 @@ $app->get('/socialite/google/callback', function () use ($app) {
     $_SESSION['token'] = $token;
     $_SESSION['expiresIn'] = time() + $expiresIn;
     $_SESSION['email'] = $user->email;
-    return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed');
+    return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed', 302, [], true);
   } catch (\Exception $e) {
-    return redirect('login');
+    return redirect('login', 302, [], true);
   }
 });
 
@@ -118,7 +118,7 @@ $app->get('/logout', function () use ($app) {
   unset($_SESSION['token']);
   unset($_SESSION['expiresIn']);
   unset($_SESSION['email']);
-  return redirect('login');
+  return redirect('login', 302, [], true);
 });
 
 

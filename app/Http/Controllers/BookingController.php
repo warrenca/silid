@@ -18,7 +18,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     $booking_errors = [];
@@ -65,14 +65,14 @@ class BookingController extends Controller
 
   public function getReset() {
     unset($_SESSION['booking_parameters']);
-    return redirect('booking');
+    return redirect('booking', 302, [], true);
   }
 
   public function postBooking() {
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     $validator = \ValidatorX::make(app()->request->all(), [
@@ -96,7 +96,7 @@ class BookingController extends Controller
         dd($e->getMessage());
       }
 
-      return redirect('booking');
+      return redirect('booking', 302, [], true);
     }
 
     $room_id = app()->request->room_id;
@@ -142,7 +142,7 @@ class BookingController extends Controller
       if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
         $booking_link = generateBookingViewLink($currentBooking->id);
         $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
-        return redirect('booking');
+        return redirect('booking', 302, [], true);
       }
     }
 
@@ -161,7 +161,7 @@ class BookingController extends Controller
           ->send(new Confirmation($booking));
     unset($_SESSION['booking_parameters']);
 
-    return redirect(generateBookingViewRoute($booking->id));
+    return redirect(generateBookingViewRoute($booking->id), 302, [], true);
   }
 
   public function getConfirmation($confirmation_id) {
@@ -180,13 +180,13 @@ class BookingController extends Controller
         // Mail::to($booking->reserved_by)
         //       ->send(new Locked($booking));
 
-        return redirect('booking/view/' . encodeBookingIdForView($booking->id));
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], true);
       }
     } catch(\Exception $e) {
       dd($e->getMessage());
       unset($_SESSION['success']);
       $_SESSION['booking_errors'] = ['That room booking do not exist.'];
-      return redirect('booking');
+      return redirect('booking', 302, [], true);
     }
   }
 
@@ -215,9 +215,9 @@ class BookingController extends Controller
                                       );
       }
 
-      return redirect('booking?try-booking-view');
+      return redirect('booking?try-booking-view', 302, [], true);
     } catch(\Exception $e) {
-      return redirect('booking?catch-booking-view');
+      return redirect('booking?catch-booking-view', 302, [], true);
     }
   }
 
@@ -225,7 +225,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     try {
@@ -239,7 +239,7 @@ class BookingController extends Controller
         unset($_SESSION['booking_errors']);
         $_SESSION['success'] = "You cancelled your booking";
 
-        return redirect('booking/view/' . encodeBookingIdForView($booking->id));
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], true);
       }
 
     } catch (\Exception $e) {
@@ -252,7 +252,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     $start_ts = strtotime($date);
@@ -297,13 +297,13 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login');
+      return redirect('login', 302, [], true);
     }
 
     $booking_date = date('Y-m-d', strtotime(app()->request->booking_date));
     $status = app()->request->status;
 
-    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status);
+    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status, 302, [], true);
   }
 
 }
