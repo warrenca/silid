@@ -33,7 +33,7 @@ class Confirmation extends Mailable
 
         $booking_view_link = "$hostname/booking/view/" . $hashids->encode($this->booking->id);
         return $this->view('emails.cerberus-responsive')
-                    ->subject('Silid Room Booking Confirmation - Reference Code: ' . str_pad($this->booking->id, 10, "0", STR_PAD_LEFT))
+                    ->subject( env('COMPANY_NAME') . ' Room Booking Reference Code: ' . str_pad($this->booking->id, 10, "0", STR_PAD_LEFT))
                     ->with([
                         'booking_view_link' => $booking_view_link,
                         'purpose' => $this->booking->purpose,
