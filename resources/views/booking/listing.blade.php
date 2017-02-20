@@ -12,7 +12,7 @@
 
 <form class="col s12" name="booking" method="POST">
   <div class="row">
-    <div class="input-field col s4">
+    <div class="input-field col s6 m3">
       <input placeholder="Date" id="booking_date" type="text" class="listing-datepicker" name="booking_date" value="{{$date}}">
       <label for="booking_date">Bookings for the date:</label>
     </div>
