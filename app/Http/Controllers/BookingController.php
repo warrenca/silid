@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\Confirmation as Confirmation;
+use App\Mail\Confirmation as MailConfirmation;
 use Illuminate\Support\Facades\Mail;
 use App\Booking as Booking;
 use App\Room as Room;
@@ -21,7 +21,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login', 302, [], getHttpSecure());
+      return redirect('login', 302, [], $this->getHttpSecure());
     }
 
     $booking_errors = [];
@@ -68,14 +68,14 @@ class BookingController extends Controller
 
   public function getReset() {
     unset($_SESSION['booking_parameters']);
-    return redirect('booking', 302, [], getHttpSecure());
+    return redirect('booking', 302, [], $this->getHttpSecure());
   }
 
   public function postBooking() {
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login', 302, [], getHttpSecure());
+      return redirect('login', 302, [], $this->getHttpSecure());
     }
 
     $validator = \ValidatorX::make(app()->request->all(), [
@@ -99,7 +99,7 @@ class BookingController extends Controller
         dd($e->getMessage());
       }
 
-      return redirect('booking', 302, [], getHttpSecure());
+      return redirect('booking', 302, [], $this->getHttpSecure());
     }
 
     $room_id = app()->request->room_id;
@@ -145,7 +145,7 @@ class BookingController extends Controller
       if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
         $booking_link = generateBookingViewLink($currentBooking->id);
         $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
-        return redirect('booking', 302, [], getHttpSecure());
+        return redirect('booking', 302, [], $this->getHttpSecure());
       }
     }
 
@@ -161,10 +161,10 @@ class BookingController extends Controller
 
     $_SESSION['success'] = "An email confirmation has been sent to you.";
     Mail::to($reserved_by)
-          ->send(new Confirmation($booking));
+          ->send(new MailConfirmation($booking));
     unset($_SESSION['booking_parameters']);
 
-    return redirect(generateBookingViewRoute($booking->id), 302, [], getHttpSecure());
+    return redirect(generateBookingViewRoute($booking->id), 302, [], $this->getHttpSecure());
   }
 
   public function getConfirmation($confirmation_id) {
@@ -183,13 +183,13 @@ class BookingController extends Controller
         // Mail::to($booking->reserved_by)
         //       ->send(new Locked($booking));
 
-        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], getHttpSecure());
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], $this->getHttpSecure());
       }
     } catch(\Exception $e) {
       dd($e->getMessage());
       unset($_SESSION['success']);
       $_SESSION['booking_errors'] = ['That room booking do not exist.'];
-      return redirect('booking', 302, [], getHttpSecure());
+      return redirect('booking', 302, [], $this->getHttpSecure());
     }
   }
 
@@ -218,9 +218,9 @@ class BookingController extends Controller
                                       );
       }
 
-      return redirect('booking?try-booking-view', 302, [], getHttpSecure());
+      return redirect('booking?try-booking-view', 302, [], $this->getHttpSecure());
     } catch(\Exception $e) {
-      return redirect('booking?catch-booking-view', 302, [], getHttpSecure());
+      return redirect('booking?catch-booking-view', 302, [], $this->getHttpSecure());
     }
   }
 
@@ -228,7 +228,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login', 302, [], getHttpSecure());
+      return redirect('login', 302, [], $this->getHttpSecure());
     }
 
     try {
@@ -242,7 +242,7 @@ class BookingController extends Controller
         unset($_SESSION['booking_errors']);
         $_SESSION['success'] = "You cancelled your booking";
 
-        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], getHttpSecure());
+        return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], $this->getHttpSecure());
       }
 
     } catch (\Exception $e) {
@@ -255,7 +255,7 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login', 302, [], getHttpSecure());
+      return redirect('login', 302, [], $this->getHttpSecure());
     }
 
     $start_ts = strtotime($date);
@@ -300,13 +300,13 @@ class BookingController extends Controller
     try {
       \Socialite::driver('google')->userFromToken($_SESSION['token']);
     } catch (\Exception $e) {
-      return redirect('login', 302, [], getHttpSecure());
+      return redirect('login', 302, [], $this->getHttpSecure());
     }
 
     $booking_date = date('Y-m-d', strtotime(app()->request->booking_date));
     $status = app()->request->status;
 
-    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status, 302, [], getHttpSecure());
+    return redirect('/booking/'.app()->request->segment(2).'/'.$booking_date.'/'.$status, 302, [], $this->getHttpSecure());
   }
 
 }
