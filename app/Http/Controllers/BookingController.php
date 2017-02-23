@@ -120,6 +120,8 @@ class BookingController extends Controller
       $booking_duration = 14400;
     } else if ($booking_duration == 'pm-half' ) {
       $booking_duration = 16200;
+    } else if ($booking_duration == 'full-day' ) {
+      $booking_duration = 34200;
     }
 
     $start_ts = strtotime("$booking_time $booking_date");
