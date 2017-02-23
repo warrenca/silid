@@ -8,8 +8,8 @@
   @endif
 
   <h5 class="header">
-    The room was booked by {{$booking->reserved_by}} for the room:
-    <i>{{$booking->room->name}}</i><br/><br/>
+    The room was booked by {{$booking->reserved_by}} for the room:<br/>
+    <i><u>{{$booking->room->name}}</u></i><br/><br/>
   Purpose: <i>{{$booking->purpose}}</i></h5>
   <div class="card horizontal hide-on-med-and-down">
     <div class="card-image">
@@ -24,7 +24,7 @@
             @if (isset($_SESSION['email']) && $booking->reserved_by==$_SESSION['email'] && $booking->confirmed)
             <li>
               <form action="{{$cancellation_link}}" method="post">
-              <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>
+                <br/>If you want to cancel this booking <button type="submit" class="btn-flat red accent-1 white-text" onclick="return confirm('Are you sure you want to cancel?')">cancel here</button>
               </form>
             </li>
             @elseif ($booking->status=='unconfirmed')
@@ -66,7 +66,7 @@
              @if (isset($_SESSION['email']) && $booking->reserved_by==$_SESSION['email'] && $booking->confirmed)
              <li>
                <form action="{{$cancellation_link}}" method="post">
-               <br/>If you want to cancel this booking, click <button type="submit" class="btn-flat" onclick="return confirm('Are you sure you want to cancel?')">here</button>.
+               <br/>If you want to cancel this booking <button type="submit" class="btn-flat red accent-1 white-text" onclick="return confirm('Are you sure you want to cancel?')">cancel here</button>
                </form>
              </li>
              @elseif ($booking->status=='unconfirmed')

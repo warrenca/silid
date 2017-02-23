@@ -57,7 +57,6 @@ class Confirmation extends Mailable
                 ->setDateEnd(new \DateTime($this->booking->end))
                 ->setDescription($this->booking->room->description)
                 ->setSummary($this->booking->purpose)
-                ->setTimezone('Asia/Singapore')
                 ->setAlarm(900);
                 // Add organizer
                 // ORGANIZER;CN="Sally Example":mailto:sally@example.com

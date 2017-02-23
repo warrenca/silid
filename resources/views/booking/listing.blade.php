@@ -53,7 +53,7 @@
        <td>{{$booking->reserved_by}}</td>
        <td>
          <a href="{{generateBookingViewLink($booking->id)}}">
-         {{date('H:i:s', strtotime($booking->start))}} - {{date('H:i:s', strtotime($booking->end))}}
+         {{date('h:i A', strtotime($booking->start))}} - {{date('h:i A', strtotime($booking->end))}}
          </a>
        </td>
      </tr>

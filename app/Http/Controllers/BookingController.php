@@ -81,7 +81,6 @@ class BookingController extends Controller
     $validator = \ValidatorX::make(app()->request->all(), [
       'room_id' => 'required|numeric',
       'purpose' => 'required|max:255',
-      'reserved_by' => 'required|email',
       'booking_date' => 'required',
       'booking_time' => 'required_if:booking_duration,1800,3600,5400,7200,9000,10800,12600',
       'booking_duration' => 'required',
@@ -104,7 +103,7 @@ class BookingController extends Controller
 
     $room_id = app()->request->room_id;
     $purpose = app()->request->purpose;
-    $reserved_by = app()->request->reserved_by;
+    $reserved_by = $_SESSION['email']; // do not use the one in the form
     $booking_date = app()->request->booking_date;
     $booking_duration = app()->request->booking_duration;
 

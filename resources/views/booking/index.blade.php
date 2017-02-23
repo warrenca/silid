@@ -51,7 +51,6 @@
       </div>
       <div class="input-field col s6">
         <input placeholder="Email" id="reserved_by" type="text" value="{{$email}}" disabled>
-        <input type="hidden" name="reserved_by" value="{{$email}}">
         <label for="reserved_by">Reserved by</label>
       </div>
     </div>
