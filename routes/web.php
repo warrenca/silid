@@ -85,7 +85,11 @@ $app->post('/booking/view-own/{date}/{status}', 'BookingController@postViewAll')
  * http://stackoverflow.com/questions/35536548/unable-to-use-laravel-socialite-with-lumen
  */
 $app->get('/socialite/google/login', function () use ($app, $secure) {
-  return \Socialite::driver('google')->stateless(false)->redirect();
+  $scopes = [
+            'https://www.googleapis.com/auth/plus.me',
+            'https://www.googleapis.com/auth/plus.profile.emails.read',
+        ];
+  return \Socialite::driver('google')->scopes ($scopes)->stateless(false)->redirect();
 });
 
 /* Socialite Google callback - after google login */
@@ -93,7 +97,8 @@ $app->get('/socialite/google/callback', function () use ($app, $secure) {
   try {
     $user = \Socialite::driver('google')->stateless(false)->user();
 
-    $regex = '/@((([^.]+)\.)+)([a-zA-Z]{3,}|[a-zA-Z.]{5,})/';
+    // change the regex to accept tld .my (2chars and up)
+    $regex = '/@((([^.]+)\.)+)([a-zA-Z]{2,5})/';
     preg_match($regex, $user->email, $matches);
     $hostname = substr($matches[0], 1);
 
@@ -111,6 +116,7 @@ $app->get('/socialite/google/callback', function () use ($app, $secure) {
     $_SESSION['email'] = $user->email;
     return redirect('/booking/view-all/' . date('Y-m-d') . '/confirmed', 302, [], $secure);
   } catch (\Exception $e) {
+    dd($e->getMessage());
     return redirect('login', 302, [], $secure);
   }
 });
