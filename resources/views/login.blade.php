@@ -22,7 +22,7 @@
     </p>
   </div>
 
-  @if (env('SILIT_DISPLAY_BOOKINGS_IN_LOGIN_PAGE'))
+  @if (env('SILID_DISPLAY_BOOKINGS_IN_LOGIN_PAGE'))
   <table class="bordered striped">
    <thead>
      <tr>
