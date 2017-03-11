@@ -1,7 +1,7 @@
 # silid
 A Meeting Room Booking System
 
-<img src="https://raw.githubusercontent.com/warrenca/silid/master/public/images/silid-screenshot.png">
+<img src="https://raw.githubusercontent.com/warrenca/silid/master/public/images/silid-screenshot.jpg">
 
 # Requirements
 - MySQL with already made database, correct user permission and password.
