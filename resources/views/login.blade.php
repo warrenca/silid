@@ -23,6 +23,7 @@
   </div>
 
   @if (env('SILID_DISPLAY_BOOKINGS_IN_LOGIN_PAGE'))
+  <h4>Meeting room bookings for today.</h4>
   <table class="bordered striped">
    <thead>
      <tr>
