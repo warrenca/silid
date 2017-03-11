@@ -47,7 +47,18 @@ $app->get('/login', function() use ($app, $secure) {
     unset($_SESSION['errors']);
   }
 
-  return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS'), 'errors' => $errors]);
+  $start_ts = time();
+  $segment2 = app()->request->segment(2);
+  $bookings = \App\Booking::where('status', 'confirmed')
+                ->whereDay('start', date('d', $start_ts))
+                ->whereMonth('start', date('m', $start_ts))
+                ->whereYear('start', date('Y', $start_ts))
+                ->get();
+
+  return $app->make('view')->make('login', ['allowed_domains'=>env('SILID_ALLOWED_DOMAINS'),
+   'errors' => $errors,
+   'bookings' => $bookings
+  ]);
 });
 
 /* Booking form */
