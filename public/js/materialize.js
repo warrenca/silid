@@ -4055,6 +4055,9 @@ if (jQuery) {
     secondaryPlaceholder: '',
     autocompleteData: {},
     autocompleteLimit: Infinity,
+    validation: {},
+    unique: false,
+    unique_error_message: 'Duplicate chip name'
   };
 
   $(document).ready(function() {
@@ -4221,8 +4224,26 @@ if (jQuery) {
           }
 
           e.preventDefault();
-          self.addChip({tag: $target.val()}, $chips);
-          $target.val('');
+          if (curr_options.unique) {
+            for (i in $chips.data('chips')) {
+              if ($chips.data('chips')[i].tag === $target.val()) {
+                alert(curr_options.unique_error_message);
+                return;
+              }
+            }
+          }
+
+          if (curr_options.validation instanceof RegExp) {
+            if ( curr_options.validation.re.test($target.val()) ) {
+              self.addChip({tag: $target.val()}, $chips);
+              $target.val('');
+            } else {
+              alert(curr_options.validation.error_message)
+            }
+          } else {
+            self.addChip({tag: $target.val()}, $chips);
+            $target.val('');
+          }
           return;
         }
 
