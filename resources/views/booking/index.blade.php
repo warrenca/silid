@@ -27,7 +27,7 @@
   </blockquote>
   @endif
 
-  <form class="col s12" name="booking" method="POST">
+  <form class="col s12" name="booking" method="POST" onsubmit="return false;">
     <div class="row">
       <div class="input-field col s12">
         <input placeholder="{{$purpose_label}}" type="text" id="purpose" name="purpose" value="{{@$booking_parameters['purpose']}}" maxlength="255">
@@ -49,13 +49,14 @@
         </select>
         <label>Select Room</label>
       </div>
-      <div class="input-field col s6">
-        <input placeholder="Email" id="reserved_by" type="text" value="{{$email}}" disabled>
-        <label for="reserved_by">Reserved by</label>
+      <div class="input-field col s5">
+        <div id="participants-list">
+        </div>
+        <label for="participants-list">Participants email</label>
       </div>
     </div>
     <div class="row">
-      <div class="input-field col s12">
+      <div class="input-field col s6">
         <input placeholder="Date" id="booking_date" type="text" class="datepicker" name="booking_date" value="{{@$booking_parameters['booking_date']}}">
         <label for="booking_date">Select booking date</label>
       </div>
@@ -122,7 +123,16 @@ $(document).ready(function(){
     } else {
       $('#booking_time').removeAttr('disabled');
     }
-  })
-})
+  });
+
+  $('#participants-list').material_chip({
+    validation: {
+      re: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      error_message: 'Invalid email format'
+    },
+    unique: true,
+    unique_error_message: 'You are adding a duplicate email'
+  });
+});
 </script>
 @stop
