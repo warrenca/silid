@@ -15,9 +15,10 @@ class Confirmation extends Mailable
      *
      * @return void
      */
-    public function __construct(Booking $booking)
+    public function __construct(Booking $booking, $eventCreator=true)
     {
         $this->booking = $booking;
+        $this->eventCreator = $eventCreator;
     }
 
     /**
@@ -40,12 +41,14 @@ class Confirmation extends Mailable
                     ->with([
                         'booking_view_link' => $booking_view_link,
                         'purpose' => $this->booking->purpose,
+                        'participants' => $this->booking->participants,
                         'booking_reserved_by' => $this->booking->reserved_by,
                         'booking_room_id' => $this->booking->room->id,
                         'booking_room_name' => $this->booking->room->name,
                         'booking_room_description' => $this->booking->room->description,
                         'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),
                         'booking_end' => date('F d, Y @H:i A', strtotime($this->booking->end)),
+                        'eventCreator' => $this->eventCreator
                     ])
                     ->attach("calendar-files/{$this->booking->id}.ics");
     }

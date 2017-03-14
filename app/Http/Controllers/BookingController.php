@@ -105,6 +105,7 @@ class BookingController extends Controller
     $purpose = app()->request->purpose;
     $reserved_by = $_SESSION['email']; // do not use the one in the form
     $booking_date = app()->request->booking_date;
+    $participants = app()->request->participants;
     $booking_duration = app()->request->booking_duration;
 
     if ($booking_duration == 'full-day' ||
@@ -152,6 +153,7 @@ class BookingController extends Controller
 
     $booking = new Booking;
     $booking->purpose = $purpose;
+    $booking->participants = $participants;
     $booking->room_id = $room_id;
     $booking->reserved_by = $reserved_by;
     $booking->start = $start;
@@ -163,6 +165,14 @@ class BookingController extends Controller
     $_SESSION['success'] = "An email confirmation has been sent to you.";
     Mail::to($reserved_by)
           ->send(new MailConfirmation($booking));
+
+    $participants_data = explode(",", $participants);
+
+    foreach ($participants_data as $participant) {
+      Mail::to($reserved_by)
+            ->send(new MailConfirmation($booking, false));
+    }
+
     unset($_SESSION['booking_parameters']);
 
     return redirect(generateBookingViewRoute($booking->id), 302, [], $this->getHttpSecure());
