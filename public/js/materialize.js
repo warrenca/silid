@@ -4233,7 +4233,7 @@ if (jQuery) {
             }
           }
 
-          if (curr_options.validation instanceof RegExp) {
+          if (curr_options.validation.re instanceof RegExp) {
             if ( curr_options.validation.re.test($target.val()) ) {
               self.addChip({tag: $target.val()}, $chips);
               $target.val('');

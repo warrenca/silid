@@ -25,8 +25,8 @@ main {
   color: #000;
 }
 /* label underline focus color */
-.input-field input[type=text]:focus {
-  border-bottom: 1px solid #000;
+.input-field input[type=text]:focus, .chips.focus {
+  border-bottom: 1px solid #000 !important;
   box-shadow: 0 1px 0 0 #000;
 }
 
@@ -42,4 +42,8 @@ ul.dropdown-content.select-dropdown li.disabled span {
     height: 24px;
     line-height: 24px;
     padding: 0 0.5rem;
+}
+
+.chips {
+  margin-top: 10px;
 }

@@ -27,7 +27,7 @@
   </blockquote>
   @endif
 
-  <form class="col s12" name="booking" method="POST" onsubmit="return false;">
+  <form class="col s12" name="booking" method="POST">
     <div class="row">
       <div class="input-field col s12">
         <input placeholder="{{$purpose_label}}" type="text" id="purpose" name="purpose" value="{{@$booking_parameters['purpose']}}" maxlength="255">
@@ -35,30 +35,31 @@
       </div>
     </div>
     <div class="row">
-      <div class="input-field col s6">
-        <select name="room_id">
-          <option value="" disabled selected>Select Room</option>
-          @foreach ($rooms as $room)
-            <option value="{{$room->id}}"
-              @if (isset($booking_parameters['room_id']) &&
-                   $room->id == $booking_parameters['room_id'])
-              selected
-              @endif
-              >{{$room->name}}</option>
-          @endforeach
-        </select>
-        <label>Select Room</label>
+      <div class="col s6">
+        <div class="input-field col s12">
+          <select name="room_id">
+            <option value="" disabled selected>Select Room</option>
+            @foreach ($rooms as $room)
+              <option value="{{$room->id}}"
+                @if (isset($booking_parameters['room_id']) &&
+                     $room->id == $booking_parameters['room_id'])
+                selected
+                @endif
+                >{{$room->name}}</option>
+            @endforeach
+          </select>
+          <label>Select Room</label>
+        </div>
+        <div class="input-field col s12">
+          <input placeholder="Date" id="booking_date" type="text" class="datepicker" name="booking_date" value="{{@$booking_parameters['booking_date']}}">
+          <label for="booking_date">Select booking date</label>
+        </div>
       </div>
-      <div class="input-field col s5">
+      <div class="input-field col s6">
         <div id="participants-list">
         </div>
         <label for="participants-list">Participants email</label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s6">
-        <input placeholder="Date" id="booking_date" type="text" class="datepicker" name="booking_date" value="{{@$booking_parameters['booking_date']}}">
-        <label for="booking_date">Select booking date</label>
+        <input type="hidden" name="participants" id="participants" value="{{@$booking_parameters['participants']}}"/>
       </div>
     </div>
     <div class="row">
@@ -125,14 +126,44 @@ $(document).ready(function(){
     }
   });
 
+  var participants = "{{@$booking_parameters['participants']}}".split(',');
+  var participants_data = [];
+  if (participants.length > 0) {
+    for (i in participants) {
+      if (participants[i]!="") {
+        participants_data.push({tag: participants[i]});
+      }
+    }
+  }
+
+
   $('#participants-list').material_chip({
     validation: {
       re: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       error_message: 'Invalid email format'
     },
     unique: true,
-    unique_error_message: 'You are adding a duplicate email'
+    unique_error_message: 'You are adding a duplicate email',
+    data: participants_data
   });
+
+  $('.chips').on('chip.delete', function(e, chip){
+      updateParticipantsTextValue();
+  });
+
+  $('.chips').on('chip.add', function(e, chip){
+    updateParticipantsTextValue();
+  });
+
+  function updateParticipantsTextValue() {
+    var participants = $('#participants-list').material_chip('data');
+    var participants_all = [];
+    for (i in participants) {
+      participants_all.push(participants[i].tag);
+    }
+
+    $('#participants').val(participants_all.toString());
+  }
 });
 </script>
 @stop
