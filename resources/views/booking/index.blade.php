@@ -144,7 +144,9 @@ $(document).ready(function(){
     },
     unique: true,
     unique_error_message: 'You are adding a duplicate email',
-    data: participants_data
+    data: participants_data,
+    limit: 10,
+    limit_error_message: 'You have reached the maximum number of emails to add'
   });
 
   $('.chips').on('chip.delete', function(e, chip){

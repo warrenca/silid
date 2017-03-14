@@ -4057,7 +4057,9 @@ if (jQuery) {
     autocompleteLimit: Infinity,
     validation: {},
     unique: false,
-    unique_error_message: 'Duplicate chip name'
+    unique_error_message: 'Duplicate chip name',
+    limit: 10,
+    limit_error_message: 'You have reached the maximum number of tags to add'
   };
 
   $(document).ready(function() {
@@ -4224,6 +4226,11 @@ if (jQuery) {
           }
 
           e.preventDefault();
+          if (curr_options.limit <= $chips.data('chips').length) {
+            alert(curr_options.limit_error_message);
+            return;
+          }
+
           if (curr_options.unique) {
             for (i in $chips.data('chips')) {
               if ($chips.data('chips')[i].tag === $target.val()) {
