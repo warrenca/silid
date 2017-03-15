@@ -36,34 +36,34 @@
 
 
 <table class="bordered striped">
-   <thead>
-     <tr>
-       <th data-field="room">Room</th>
-       <th data-field="purpose">Purpose</th>
-       <th data-field="reserved_by">Reserved By</th>
-       <th data-field="time">Time (start-end)</th>
-     </tr>
-   </thead>
+ <thead>
+   <tr>
+     <th data-field="room">Room</th>
+     <th data-field="purpose">Purpose</th>
+     <th data-field="reserved_by">Reserved By</th>
+     <th data-field="time">Time (start-end)</th>
+   </tr>
+ </thead>
 
-   <tbody>
-     @forelse ($bookings as $booking)
-     <tr>
-       <td>{{$booking->room->name}}</td>
-       <td>{{$booking->purpose}}</td>
-       <td>{{$booking->reserved_by}}</td>
-       <td>
-         <a href="{{generateBookingViewLink($booking->id)}}">
-         {{date('h:i A', strtotime($booking->start))}} - {{date('h:i A', strtotime($booking->end))}}
-         </a>
-       </td>
-     </tr>
-     @empty
-     <tr>
-        <td colspan="4">No bookings today</td>
-     </tr>
-     @endforelse
-   </tbody>
- </table>
+ <tbody>
+   @forelse ($bookings as $booking)
+   <tr>
+     <td>{{$booking->room->name}}</td>
+     <td>{{$booking->purpose}}</td>
+     <td>{{$booking->reserved_by}}</td>
+     <td>
+       <a href="{{generateBookingViewLink($booking->id)}}">
+       {{date('h:i A', strtotime($booking->start))}} - {{date('h:i A', strtotime($booking->end))}}
+       </a>
+     </td>
+   </tr>
+   @empty
+   <tr>
+      <td colspan="4">No bookings today</td>
+   </tr>
+   @endforelse
+ </tbody>
+</table>
 @stop
 
 @section('style')

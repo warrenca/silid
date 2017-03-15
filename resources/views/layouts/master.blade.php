@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 
     <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+    <script src="/js/materialize.js"></script>
     <script src="/js/pickadate.js/lib/picker.time.js"></script>
     <script src="/js/scripts.js"></script>
     <style>
@@ -44,7 +44,7 @@
             @if( file_exists("images/company/".env('COMPANY_LOGO')) && !is_dir("images/company/".env('COMPANY_LOGO')) )
               <img src="/images/company/{{env('COMPANY_LOGO')}}" height="60" class="z-depth-2"/>
             @else
-              <img src="/images/silid-60px.jpg" height="60" class="z-depth-2 circle"/>
+              <img src="/images/silid-60px.jpg" height="60" class="z-depth-2"/>
             @endif
           </a>
           @if (isset($_SESSION['token']))
@@ -107,8 +107,8 @@
         ">
          <div class="footer-copyright">
            <div class="container">
-           Powered by Silid Booking 2017
-           <a class="grey-text text-lighten-4 right" href="https://github.com/warrenca/silid">Silid@GitHub</a>
+           Powered by Silid Meeting Room Booking 2017
+           <a class="grey-text text-lighten-4 right" href="https://github.com/warrenca/silid"><img src="/images/silid-60px.jpg" height="15" class="z-depth-2" style="vertical-align: text-top"/>  Silid@GitHub</a>
            </div>
          </div>
       </footer>

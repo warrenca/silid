@@ -178,7 +178,7 @@
 
         <!-- Visually Hidden Preheader Text : BEGIN -->
         <div style="display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;font-family: sans-serif;">
-            (Optional) This text will appear in the inbox preview, but not the email body.
+            {{$purpose}}
         </div>
         <!-- Visually Hidden Preheader Text : END -->
 
@@ -189,7 +189,7 @@
 					@if( file_exists("images/company/".env('COMPANY_LOGO')) && !is_dir("images/company/".env('COMPANY_LOGO')) )
 						<img src="{{$message->embed('images/company/' . env('COMPANY_LOGO'))}}" height="60" width="120" class="z-depth-2" style="height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;"/>
 					@else
-						<img src="{{$message->embed('images/company/silid-60px.jpg')}}" height="60" width="120" class="z-depth-2 circle" style="height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;"/>
+						<img src="{{$message->embed('images/silid-60px.jpg')}}" height="60" width="120" class="z-depth-2 circle" style="height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;"/>
 					@endif
 				</td>
 			</tr>
@@ -204,7 +204,13 @@
 				<td bgcolor="#ffffff">
 					<p style="padding: 10px">
 						Purpose: {{$purpose}}<br/>
-						<i>Reserved by: {{$booking_reserved_by}} on <br/><b>{{$booking_start}}</b> to <b>{{$booking_end}}</b></i><br/>
+						<i>
+							@if ($eventCreator)
+								By you:
+							@else
+								You have been invited by:
+							@endif
+							{{$booking_reserved_by}} on <br/><b>{{$booking_start}}</b> to <b>{{$booking_end}}</b></i><br/>
 					</p>
 					<img src="{{$message->embed('images/room-' . $booking_room_id . '.jpg')}}" width="600" height="" alt="alt_text" border="0" align="center" style="width: 100%; max-width: 600px; height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;" class="g-img">
 				</td>
