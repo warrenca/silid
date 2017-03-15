@@ -170,7 +170,7 @@ class BookingController extends Controller
 
     $count = 1;
     foreach ($participants_data as $participant) {
-      Mail::to($reserved_by)
+      Mail::to($participant)
             ->send(new MailConfirmation($booking, false));
       $count++;
 
