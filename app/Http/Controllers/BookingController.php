@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendConfirmationEmailQ as SendConfirmationEmailQ;
 use App\Mail\Confirmation as MailConfirmation;
-use Illuminate\Support\Facades\Mail;
 use App\Booking as Booking;
 use App\Room as Room;
 use Log;
@@ -163,20 +163,20 @@ class BookingController extends Controller
     $booking->save();
 
     $_SESSION['success'] = "An email confirmation has been sent to you.";
-    Mail::to($reserved_by)
-          ->send(new MailConfirmation($booking));
+    $this->dispatch(new SendConfirmationEmailQ($reserved_by, new MailConfirmation($booking)));
 
     $participants_data = explode(",", $participants);
 
-    $count = 1;
-    foreach ($participants_data as $participant) {
-      Mail::to($reserved_by)
-            ->send(new MailConfirmation($booking, false));
-      $count++;
+    if (count($participants_data) > 0) {
+      $count = 1;
+      foreach ($participants_data as $participant) {
+        $this->dispatch(new SendConfirmationEmailQ($participant, new MailConfirmation($booking, false)));
 
-      if ($count > 10) {
-        break;
-      }
+        $count++;
+        if ($count > 10) {
+          break;
+        }
+      }    
     }
 
     unset($_SESSION['booking_parameters']);
