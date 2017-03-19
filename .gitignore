@@ -18,8 +18,8 @@ bootstrap/cache/
 .env
 public/images/company/*
 !public/images/company/.gitkeep
-public/calendar-files/*
-!public/calendar-files/.gitkeep
+calendar-files/*
+!calendar-files/.gitkeep
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
