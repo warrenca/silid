@@ -163,20 +163,21 @@ class BookingController extends Controller
     $booking->save();
 
     $_SESSION['success'] = "An email confirmation has been sent to you.";
-    $this->dispatch(new SendConfirmationEmailQ($reserved_by, new MailConfirmation($booking)));
+    $this->dispatch(new SendConfirmationEmailQ($reserved_by, $booking, true));
 
     $participants_data = explode(",", $participants);
 
-    if (count($participants_data) > 0) {
+    if (count($participants_data) > 1) {
       $count = 1;
       foreach ($participants_data as $participant) {
-        $this->dispatch(new SendConfirmationEmailQ($participant, new MailConfirmation($booking, false)));
-
-        $count++;
-        if ($count > 10) {
-          break;
+        if (filter_var($participant, FILTER_VALIDATE_EMAIL)) {
+          $this->dispatch(new SendConfirmationEmailQ($participant, $booking, false));
+          $count++;
+          if ($count > 10) {
+            break;
+          }
         }
-      }    
+      }
     }
 
     unset($_SESSION['booking_parameters']);
