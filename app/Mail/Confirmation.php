@@ -51,7 +51,7 @@ class Confirmation extends Mailable
                 'eventCreator' => $this->eventCreator
               ])
              ->attach("calendar-files/{$this->booking->id}.ics");
-        \Storage::delete(("calendar-files/{$this->booking->id}.ics"));
+        \Storage::delete("calendar-files/{$this->booking->id}.ics");
     }
 
     private function generateIcs() {
