@@ -19,6 +19,7 @@ $ cp .env.example .env
 # Fill all the env values!!!
 $ php artisan migrate
 $ php artisan db:seed
+$ php artisan queue:listen database& #to process the MailQ
 $ php -S localhost:8000 -t public
 ```
 
