@@ -25,6 +25,17 @@ return [
     'Retrospective Meeting',
     'Collaborative Meetings',
   ],
+  'recursion_frequency' => [
+    'daily' => 'Daily',
+    'weekly' => 'Weekly',
+    'monthly' => 'Monthly',
+  ],
+  'recursion_count' => [
+    '2' => 2,
+    '3' => 3,
+    '4' => 4,
+    '5' => 5,
+  ],
 
   /* These hash length values are constant. You should not change
    * this if you already have users who made bookings. The link on

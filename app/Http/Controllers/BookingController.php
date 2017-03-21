@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendConfirmationEmailQ as SendConfirmationEmailQ;
 use App\Mail\Confirmation as MailConfirmation;
-use Illuminate\Support\Facades\Mail;
 use App\Booking as Booking;
 use App\Room as Room;
+use When\When;
+use DateTime;
 use Log;
 
 define('DEFAULT_BOOKING_STATUS', 'confirmed');
@@ -61,7 +63,9 @@ class BookingController extends Controller
                                       'booking_durations' => app()['config']['booking.duration'],
                                       'booking_parameters' => $booking_parameters,
                                       'success_message' => $success_message,
-                                      'purpose_label' => $purpose_labels[$random_purpose]
+                                      'purpose_label' => $purpose_labels[$random_purpose],
+                                      'recursion_frequency' => app()['config']['booking.recursion_frequency'],
+                                      'recursion_count' => app()['config']['booking.recursion_count'],
                                     ]
                                   );
   }
@@ -107,6 +111,13 @@ class BookingController extends Controller
     $booking_date = app()->request->booking_date;
     $participants = app()->request->participants;
     $booking_duration = app()->request->booking_duration;
+    $recursion_options = (int)app()->request->recursion_options;
+    $recursion_frequency = $recursion_options===1
+                            ? app()->request->recursion_frequency
+                            : app()['config']['booking.recursion_frequency.daily'];
+    $recursion_count = $recursion_options===1
+                            ? app()->request->recursion_count
+                            : 1;
 
     if ($booking_duration == 'full-day' ||
         $booking_duration == 'am-half') {
@@ -125,57 +136,74 @@ class BookingController extends Controller
       $booking_duration = 34200;
     }
 
-    $start_ts = strtotime("$booking_time $booking_date");
-    $end_ts = $start_ts + $booking_duration;
+    $r = new When();
+    $r->startDate(new DateTime($booking_date))
+      ->freq($recursion_frequency)
+      ->count($recursion_count)
+      ->generateOccurrences();
 
-    $start = date('Y-m-d H:i:s', $start_ts);
-    $end = date('Y-m-d H:i:s', $end_ts);
+    $recursion_start_ts = strtotime("$booking_time " . $booking_date);
+    $recursion_start_date = date('Y-m-d H:i:s', $recursion_start_ts);
 
-    // http://laraveldaily.com/eloquent-date-filtering-wheredate-and-other-methods/
-    $currentBookings = Booking::where('room_id', $room_id)
-                  ->where('confirmed', 1)
-                  ->whereDay('start', date('d', $start_ts))
-                  ->whereMonth('start', date('m', $start_ts))
-                  ->whereYear('start', date('Y', $start_ts))
-                  ->get();
+    foreach ($r->occurrences as $occurrence) {
+      $start_ts = strtotime("$booking_time " . $occurrence->format('Y-m-d'));
+      $end_ts = $start_ts + $booking_duration;
 
-    foreach ($currentBookings as $currentBooking) {
-      $booking_start_ts = strtotime($currentBooking->start);
-      $booking_end_ts = strtotime($currentBooking->end);
+      $start = date('Y-m-d H:i:s', $start_ts);
+      $end = date('Y-m-d H:i:s', $end_ts);
 
-      // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
-      if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
-        $booking_link = generateBookingViewLink($currentBooking->id);
-        $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
-        return redirect('booking', 302, [], $this->getHttpSecure());
+      // http://laraveldaily.com/eloquent-date-filtering-wheredate-and-other-methods/
+      $currentBookings = Booking::where('room_id', $room_id)
+                    ->where('confirmed', 1)
+                    ->whereDay('start', date('d', $start_ts))
+                    ->whereMonth('start', date('m', $start_ts))
+                    ->whereYear('start', date('Y', $start_ts))
+                    ->get();
+
+      foreach ($currentBookings as $currentBooking) {
+        $booking_start_ts = strtotime($currentBooking->start);
+        $booking_end_ts = strtotime($currentBooking->end);
+
+        // http://stackoverflow.com/questions/13387490/determining-if-two-time-ranges-overlap-at-any-point
+        if ($booking_start_ts < $end_ts && $booking_end_ts > $start_ts) {
+          $booking_link = generateBookingViewLink($currentBooking->id);
+          $_SESSION['booking_errors'] = ["An active room booking is already reserved on the timing you selected. View it <a href='$booking_link'>here</a>."];
+          return redirect('booking', 302, [], $this->getHttpSecure());
+        }
       }
-    }
 
-    $booking = new Booking;
-    $booking->purpose = $purpose;
-    $booking->participants = $participants;
-    $booking->room_id = $room_id;
-    $booking->reserved_by = $reserved_by;
-    $booking->start = $start;
-    $booking->end = $end;
-    $booking->status = DEFAULT_BOOKING_STATUS;
-    $booking->confirmed = DEFAULT_BOOKING_CONFIRMED;
-    $booking->save();
+      $booking = new Booking;
+      $booking->purpose = $purpose;
+      $booking->participants = $participants;
+      $booking->recursion_start_date = $recursion_start_date;
+      $booking->recursion_frequency = $recursion_frequency;
+      $booking->recursion_count = $recursion_count;
+      $booking->room_id = $room_id;
+      $booking->reserved_by = $reserved_by;
+      $booking->start = $start;
+      $booking->end = $end;
+      $booking->status = DEFAULT_BOOKING_STATUS;
+      $booking->confirmed = DEFAULT_BOOKING_CONFIRMED;
+      $booking->save();
 
-    $_SESSION['success'] = "An email confirmation has been sent to you.";
-    Mail::to($reserved_by)
-          ->send(new MailConfirmation($booking));
+      $_SESSION['success'] = "An email confirmation has been sent to you.";
+      $_SESSION['recursion_frequency'] = $recursion_frequency;
+      $_SESSION['recursion_count'] = $recursion_count;
+      $this->dispatch(new SendConfirmationEmailQ($reserved_by, $booking, true));
 
-    $participants_data = explode(",", $participants);
+      $participants_data = explode(",", $participants);
 
-    $count = 1;
-    foreach ($participants_data as $participant) {
-      Mail::to($participant)
-            ->send(new MailConfirmation($booking, false));
-      $count++;
-
-      if ($count > 10) {
-        break;
+      if (count($participants_data) > 1) {
+        $count = 1;
+        foreach ($participants_data as $participant) {
+          if (filter_var($participant, FILTER_VALIDATE_EMAIL)) {
+            $this->dispatch(new SendConfirmationEmailQ($participant, $booking, false));
+            $count++;
+            if ($count > 10) {
+              break;
+            }
+          }
+        }
       }
     }
 
@@ -196,9 +224,6 @@ class BookingController extends Controller
       if ($booking->count() > 0) {
         unset($_SESSION['booking_errors']);
         $_SESSION['success'] = "Your booking is confirmed!";
-        //
-        // Mail::to($booking->reserved_by)
-        //       ->send(new Locked($booking));
 
         return redirect('booking/view/' . encodeBookingIdForView($booking->id), 302, [], $this->getHttpSecure());
       }
@@ -225,13 +250,24 @@ class BookingController extends Controller
         $confirmation_id = encodeBookingIdForConfirmation($booking->id);
         $cancellation_link = generateBookingCancellationLink($booking->id);
 
+        $booking_view_data = [
+          'booking' => $booking,
+          'confirmation_id' => $confirmation_id,
+          'success_message' => $success_message,
+          'cancellation_link' => $cancellation_link
+        ];
+
+        if ($booking->recursion_count > 1) {
+          $r = new When();
+          $r->startDate(new DateTime($booking->recursion_start_date))
+            ->freq($booking->recursion_frequency)
+            ->count($booking->recursion_count)
+            ->generateOccurrences();
+          $booking_view_data['occurrences'] = $r->occurrences;
+        }
+
         return app()->make('view')->make('booking/view',
-                                        [
-                                          'booking' => $booking,
-                                          'confirmation_id' => $confirmation_id,
-                                          'success_message' => $success_message,
-                                          'cancellation_link' => $cancellation_link
-                                        ]
+                                        $booking_view_data
                                       );
       }
 

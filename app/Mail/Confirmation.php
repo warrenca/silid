@@ -36,21 +36,22 @@ class Confirmation extends Mailable
         $hashids = new Hashids(env('APP_KEY'), config('booking.hashes.VIEW_HASH_LENGTH'));
 
         $booking_view_link = "$hostname/booking/view/" . $hashids->encode($this->booking->id);
-        return $this->view('emails.cerberus-responsive')
-                    ->subject( env('COMPANY_NAME') . ' Room Booking Reference Code: ' . str_pad($this->booking->id, 10, "0", STR_PAD_LEFT))
-                    ->with([
-                        'booking_view_link' => $booking_view_link,
-                        'purpose' => $this->booking->purpose,
-                        'participants' => $this->booking->participants,
-                        'booking_reserved_by' => $this->booking->reserved_by,
-                        'booking_room_id' => $this->booking->room->id,
-                        'booking_room_name' => $this->booking->room->name,
-                        'booking_room_description' => $this->booking->room->description,
-                        'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),
-                        'booking_end' => date('F d, Y @H:i A', strtotime($this->booking->end)),
-                        'eventCreator' => $this->eventCreator
-                    ])
-                    ->attach("calendar-files/{$this->booking->id}.ics");
+        $this->view('emails.cerberus-responsive')
+             ->subject( env('COMPANY_NAME') . ' Room Booking Reference Code: ' . str_pad($this->booking->id, 10, "0", STR_PAD_LEFT))
+             ->with([
+                'booking_view_link' => $booking_view_link,
+                'purpose' => $this->booking->purpose,
+                'participants' => $this->booking->participants,
+                'booking_reserved_by' => $this->booking->reserved_by,
+                'booking_room_id' => $this->booking->room->id,
+                'booking_room_name' => $this->booking->room->name,
+                'booking_room_description' => $this->booking->room->description,
+                'booking_start' => date('F d, Y @H:i A', strtotime($this->booking->start)),
+                'booking_end' => date('F d, Y @H:i A', strtotime($this->booking->end)),
+                'eventCreator' => $this->eventCreator
+              ])
+             ->attach("calendar-files/{$this->booking->id}.ics");
+        \Storage::delete("calendar-files/{$this->booking->id}.ics");
     }
 
     private function generateIcs() {
