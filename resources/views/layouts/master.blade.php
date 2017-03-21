@@ -107,8 +107,8 @@
         ">
          <div class="footer-copyright">
            <div class="container">
-           Powered by Silid Booking 2017
-           <a class="grey-text text-lighten-4 right" href="https://github.com/warrenca/silid">Silid@GitHub</a>
+           Powered by Silid Meeting Room Booking 2017
+           <a class="grey-text text-lighten-4 right" href="https://github.com/warrenca/silid"><img src="/images/silid-60px.jpg" height="15" class="z-depth-2" style="vertical-align: text-top"/>  Silid@GitHub</a>
            </div>
          </div>
       </footer>

@@ -8,6 +8,7 @@ A Meeting Room Booking System
 - PHP v6
 - Composer
 - SMTP Server
+- Google API key and secret
 
 # Run locally
 ```

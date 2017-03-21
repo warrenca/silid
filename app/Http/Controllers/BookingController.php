@@ -168,9 +168,15 @@ class BookingController extends Controller
 
     $participants_data = explode(",", $participants);
 
+    $count = 1;
     foreach ($participants_data as $participant) {
-      Mail::to($reserved_by)
+      Mail::to($participant)
             ->send(new MailConfirmation($booking, false));
+      $count++;
+
+      if ($count > 10) {
+        break;
+      }
     }
 
     unset($_SESSION['booking_parameters']);
