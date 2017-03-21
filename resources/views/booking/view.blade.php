@@ -95,14 +95,14 @@
    </div>
  </div>
 
- @if ($_SESSION['recursion_count'] > 1)
+ @if ($booking->recursion_count > 1)
  <div class="row">
    <ul class="collapsible popout" data-collapsible="accordion">
      <li>
        <div class="collapsible-header active"><i class="material-icons">replay</i>Recurring Options</div>
        <div class="collapsible-body">
          <div class="row">
-           Happening {{$_SESSION['recursion_frequency']}} on the following dates
+           Happening {{$booking->recursion_frequency}} on the following dates
            <ul class="collection">
            @foreach ($occurrences as $occurrence)
             <li class="collection-item">{{$occurrence->format('F d, Y @h:i:s A')}}</li>

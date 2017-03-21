@@ -137,6 +137,9 @@ class BookingController extends Controller
       ->count($recursion_count)
       ->generateOccurrences();
 
+    $recursion_start_ts = strtotime("$booking_time " . $booking_date);
+    $recursion_start_date = date('Y-m-d H:i:s', $recursion_start_ts);
+
     foreach ($r->occurrences as $occurrence) {
       $start_ts = strtotime("$booking_time " . $occurrence->format('Y-m-d'));
       $end_ts = $start_ts + $booking_duration;
@@ -167,6 +170,9 @@ class BookingController extends Controller
       $booking = new Booking;
       $booking->purpose = $purpose;
       $booking->participants = $participants;
+      $booking->recursion_start_date = $recursion_start_date;
+      $booking->recursion_frequency = $recursion_frequency;
+      $booking->recursion_count = $recursion_count;
       $booking->room_id = $room_id;
       $booking->reserved_by = $reserved_by;
       $booking->start = $start;
@@ -246,11 +252,11 @@ class BookingController extends Controller
           'cancellation_link' => $cancellation_link
         ];
 
-        if ($_SESSION['recursion_count'] > 1) {
+        if ($booking->recursion_count > 1) {
           $r = new When();
-          $r->startDate(new DateTime($booking->start))
-            ->freq($_SESSION['recursion_frequency'])
-            ->count($_SESSION['recursion_count'])
+          $r->startDate(new DateTime($booking->recursion_start_date))
+            ->freq($booking->recursion_frequency)
+            ->count($booking->recursion_count)
             ->generateOccurrences();
           $booking_view_data['occurrences'] = $r->occurrences;
         }
