@@ -47,3 +47,11 @@ ul.dropdown-content.select-dropdown li.disabled span {
 .chips {
   margin-top: 10px;
 }
+
+div.room-date-container div.input-field {
+  padding: 0;
+}
+
+div.room-date-container div.input-field.col label {
+  left: 0;
+}
