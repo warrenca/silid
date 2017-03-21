@@ -4230,7 +4230,6 @@ if (jQuery) {
             alert(curr_options.limit_error_message);
             return;
           }
-
           if (curr_options.unique) {
             for (i in $chips.data('chips')) {
               if ($chips.data('chips')[i].tag === $target.val()) {
