@@ -15,7 +15,8 @@
         "illuminate/mail": "^5.4",
         "hashids/hashids": "^2.0",
         "calendar/icsfile": "^3.2",
-        "league/flysystem-aws-s3-v3": "~1.0"
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "tplaner/when": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

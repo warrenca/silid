@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col s6">
+      <div class="col s6 room-date-container">
         <div class="input-field col s12">
           <select name="room_id">
             <option value="" disabled selected>Select Room</option>
@@ -81,6 +81,44 @@
         </select>
         <label>Duration</label>
       </div>
+    </div>
+    <div class="row">
+      <ul class="collapsible popout" data-collapsible="accordion">
+          <li>
+            <div class="collapsible-header active"><i class="material-icons">replay</i>Recurring Options</div>
+            <div class="collapsible-body">
+              <div class="row">
+                <div class="input-field col s6">
+                  <select name="recursion_frequency">
+                    <option value="" disabled selected>Frequency</option>
+                    @foreach ($recursion_frequency as $frequency => $label)
+                      <option value="{{$frequency}}"
+                      @if (isset($booking_parameters['recursion_frequency']) &&
+                           $frequency == $booking_parameters['recursion_frequency'])
+                      selected
+                      @endif
+                      >{{$label}}</option>
+                    @endforeach
+                  </select>
+                  <label>Frequency</label>
+                </div>
+                <div class="input-field col s6">
+                  <select name="recursion_count">
+                    @foreach ($recursion_count as $count => $label)
+                      <option value="{{$count}}"
+                      @if (isset($booking_parameters['recursion_count']) &&
+                           $count == $booking_parameters['recursion_count'])
+                      selected
+                      @endif
+                      >{{$label}}</option>
+                    @endforeach
+                  </select>
+                  <label>Count</label>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
     </div>
     <div class="row">
       <div class="input-field col s12">
@@ -136,7 +174,6 @@ $(document).ready(function(){
     }
   }
 
-
   $('#participants-list').material_chip({
     validation: {
       re: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -166,6 +203,12 @@ $(document).ready(function(){
 
     $('#participants').val(participants_all.toString());
   }
+
+  $('.collapsible').collapsible({
+    accordion: false, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+    onOpen: function(el) { console.log('Open'); }, // Callback for Collapsible open
+    onClose: function(el) { console.log('Closed'); } // Callback for Collapsible close
+  });
 });
 </script>
 @stop
