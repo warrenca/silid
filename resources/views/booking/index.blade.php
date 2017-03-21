@@ -83,14 +83,26 @@
       </div>
     </div>
     <div class="row">
+      <input type="hidden" value="0" id="recursion_options" name="recursion_options"/>
       <ul class="collapsible popout" data-collapsible="accordion">
           <li>
-            <div class="collapsible-header active"><i class="material-icons">replay</i>Recurring Options</div>
+            <div class="collapsible-header
+            @if (isset($booking_parameters['recursion_options']) &&
+                 (int)$booking_parameters['recursion_options']===1)
+              active
+            @endif
+            "><i class="material-icons">replay</i>Recursion Options <span id="recursion-options-active-label">
+              @if (isset($booking_parameters['recursion_options']) &&
+                   (int)$booking_parameters['recursion_options']===1)
+                (enabled)
+              @else
+                (disabled, click to enable)
+              @endif
+            </span></div>
             <div class="collapsible-body">
               <div class="row">
                 <div class="input-field col s6">
                   <select name="recursion_frequency">
-                    <option value="" disabled selected>Frequency</option>
                     @foreach ($recursion_frequency as $frequency => $label)
                       <option value="{{$frequency}}"
                       @if (isset($booking_parameters['recursion_frequency']) &&
@@ -206,8 +218,14 @@ $(document).ready(function(){
 
   $('.collapsible').collapsible({
     accordion: false, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
-    onOpen: function(el) { console.log('Open'); }, // Callback for Collapsible open
-    onClose: function(el) { console.log('Closed'); } // Callback for Collapsible close
+    onOpen: function(el) {
+      $('#recursion-options-active-label').html('(enabled)')
+      $('#recursion_options').val(1);
+    }, // Callback for Collapsible open
+    onClose: function(el) {
+      $('#recursion-options-active-label').html('(disabled, click to enable)')
+      $('#recursion_options').val(0);
+    } // Callback for Collapsible close
   });
 });
 </script>

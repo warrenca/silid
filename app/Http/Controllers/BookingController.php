@@ -111,8 +111,13 @@ class BookingController extends Controller
     $booking_date = app()->request->booking_date;
     $participants = app()->request->participants;
     $booking_duration = app()->request->booking_duration;
-    $recursion_frequency = app()->request->recursion_frequency;
-    $recursion_count = app()->request->recursion_count;
+    $recursion_options = (int)app()->request->recursion_options;
+    $recursion_frequency = $recursion_options===1
+                            ? app()->request->recursion_frequency
+                            : app()['config']['booking.recursion_frequency.daily'];
+    $recursion_count = $recursion_options===1
+                            ? app()->request->recursion_count
+                            : 1;
 
     if ($booking_duration == 'full-day' ||
         $booking_duration == 'am-half') {
