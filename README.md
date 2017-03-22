@@ -23,6 +23,15 @@ $ php artisan queue:listen database& #to process the MailQ
 $ php -S localhost:8000 -t public
 ```
 
+# Updating
+```
+$ git pull origin master
+$ php composer.phar update
+$ cd silid
+$ php artisan migrate
+$ nohup php artisan queue:listen database&
+```
+
 # With Docker locally
 Run the following command, if successful you should be able to open http://localhost:8000 or the value you set in SILID_HOSTNAME env. DB_HOST is your host computer IP if you're running inside docker.
 ```
